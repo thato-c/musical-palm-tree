@@ -1,0 +1,50 @@
+﻿@model List<Student>
+@{
+}
+
+<br />
+    <a asp-controller="Student" asp-action="Create">Create</a>
+<br />
+<br />
+
+<h1>Students</h1>
+
+@if (Model != null)
+{
+    <table class="table">
+        <tr>
+            <th>
+                First Name
+            </th>
+            <th>
+                Last Name
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+        @foreach (var student in Model)
+        {
+            if (student != null)
+            {
+                <tr>
+                    <td>
+                        @student.FirstName
+                    </td>
+                    <td>
+                        @student.LastName
+                    </td>
+                    <td>
+                        <a asp-controller="Student" asp-action="Edit" asp-route-StudentId="@student.StudentId">Edit</a>
+                    </td>
+                    <td>
+                        <a asp-controller="Student" asp-action="Delete" asp-route-StudentId="@student.StudentId">Delete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+}
+else
+{
+    <p>@ViewBag.Message</p>
+}
