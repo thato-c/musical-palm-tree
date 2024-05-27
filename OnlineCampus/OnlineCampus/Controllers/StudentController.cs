@@ -16,11 +16,21 @@ namespace OnlineCampus.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString,string currentFilter, int? pageNumber)
         {
             try
             {
                 ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+                if (searchString != null)
+                {
+                    pageNumber = 1;
+                }
+                else
+                {
+                    searchString = currentFilter;
+                }
+
                 ViewData["CurrentFilter"] = searchString;
                 var students = from s in _context.Students select s;
 
@@ -38,7 +48,8 @@ namespace OnlineCampus.Controllers
                         students.OrderBy(s => s.LastName);
                         break;
                 }
-                return View(await students.AsNoTracking().ToListAsync());
+                int pageSize = 3;
+                return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
             }
             catch (DbUpdateException ex)
             {
