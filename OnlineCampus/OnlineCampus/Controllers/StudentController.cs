@@ -16,21 +16,23 @@ namespace OnlineCampus.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder)
         {
             try
             {
-                var students = await _context.Students.AsNoTracking().ToListAsync();
+                ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+                var students = from s in _context.Students select s;
 
-                if (students.Count == 0)
+                switch (sortOrder)
                 {
-                    ViewBag.Message = "No Students Exist";
-                    return View();
+                    case "name_desc":
+                        students = students.OrderByDescending(s => s.LastName);
+                        break;
+                    default: 
+                        students.OrderBy(s => s.LastName);
+                        break;
                 }
-                else
-                {
-                    return View(students);
-                }
+                return View(await students.AsNoTracking().ToListAsync());
             }
             catch (DbUpdateException ex)
             {
@@ -195,6 +197,7 @@ namespace OnlineCampus.Controllers
                                         + "have been displayed. If you still want to edit this record, click "
                                         + "the Save button again. Otherwise click the Back to List hyperlink.");
 
+                                    //TODO: Update the viewModel values to the newly read database values
                                     viewModel.StudentId = databaseValues.StudentId;
                                     viewModel.FirstName = databaseValues.FirstName; 
                                     viewModel.LastName = databaseValues.LastName;
