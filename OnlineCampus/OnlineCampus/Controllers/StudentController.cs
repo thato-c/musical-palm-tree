@@ -19,7 +19,7 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var students = await _context.Students.ToListAsync();
+                var students = await _context.Students.AsNoTracking().ToListAsync();
 
                 if (students.Count == 0)
                 {
@@ -57,44 +57,79 @@ namespace OnlineCampus.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(StudentViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Map the ViewModel to the Student Model
-                var Student = new Models.Student
+                if (ModelState.IsValid)
                 {
-                    FirstName = viewModel.FirstName,
-                    LastName = viewModel.LastName,
-                };
+                    // Map the ViewModel to the Student Model
+                    var Student = new Models.Student
+                    {
+                        FirstName = viewModel.FirstName,
+                        LastName = viewModel.LastName,
+                    };
 
-                // Add and save the new student to the database
-                _context.Students.Add(Student);
-                await _context.SaveChangesAsync();
+                    // Add and save the new student to the database
+                    _context.Students.Add(Student);
+                    await _context.SaveChangesAsync();
 
-                return RedirectToAction("Index");
+                    return RedirectToAction("Index");
+                }
+                return View(viewModel);
             }
-            return View(viewModel);
+            catch (DbUpdateException ex)
+            {
+                // Log the exception details
+                Console.WriteLine($"DbUpdateException: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
+                // Optionally, log additional details
+                // Log the SQL statement causing the exception
+                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
+                ModelState.AddModelError("", "An error occurred while inserting data into the database.");
+
+                ViewBag.Message = "An error occurred while inserting data into the database.";
+                return View();
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(Guid StudentId)
         {
-            var student = await _context.Students
+            try
+            {
+                var student = await _context.Students
                 .Where(s => s.StudentId == StudentId)
-                .Select(s => new StudentDetailViewModel 
+                .Select(s => new StudentDetailViewModel
                 {
                     StudentId = s.StudentId,
                     FirstName = s.FirstName,
                     LastName = s.LastName,
                 })
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (student != null)
-            {
-                return View(student);
+                if (student != null)
+                {
+                    return View(student);
+                }
+                else
+                {
+                    ViewBag.Message = "The Student has not been found.";
+                    return View();
+                }
             }
-            else
+            catch (DbUpdateException ex)
             {
-                ViewBag.Message = "The Student has not been found.";
+                // Log the exception details
+                Console.WriteLine($"DbUpdateException: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
+                // Optionally, log additional details
+                // Log the SQL statement causing the exception
+                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
+                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
+
+                ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
             }
         }
@@ -103,46 +138,66 @@ namespace OnlineCampus.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(StudentDetailViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var studentToEdit = await _context.Students
-                    .Where(s => s.StudentId == viewModel.StudentId)
-                    .FirstOrDefaultAsync();
-
-                if (studentToEdit != null)
+                if (ModelState.IsValid)
                 {
-                    if (studentToEdit.FirstName == viewModel.FirstName && studentToEdit.LastName == viewModel.LastName) 
+                    var studentToEdit = await _context.Students
+                        .Where(s => s.StudentId == viewModel.StudentId)
+                        .FirstOrDefaultAsync();
+
+                    if (studentToEdit != null)
                     {
-                        ModelState.AddModelError(string.Empty ,"Data has not been modified");
-                        return View(viewModel);
+                        if (studentToEdit.FirstName == viewModel.FirstName && studentToEdit.LastName == viewModel.LastName)
+                        {
+                            ModelState.AddModelError(string.Empty, "Data has not been modified");
+                            return View(viewModel);
+                        }
+                        else
+                        {
+                            studentToEdit.FirstName = viewModel.FirstName;
+                            studentToEdit.LastName = viewModel.LastName;
+
+                            _context.Update(studentToEdit);
+                            await _context.SaveChangesAsync();
+
+                            return RedirectToAction("Index");
+                        }
                     }
                     else
                     {
-                        studentToEdit.FirstName = viewModel.FirstName;
-                        studentToEdit.LastName = viewModel.LastName;
-
-                        _context.Update(studentToEdit);
-                        await _context.SaveChangesAsync();
-
-                        return RedirectToAction("Index");
-                    } 
+                        ViewBag.Message = "Student was not found.";
+                        return View();
+                    }
                 }
                 else
                 {
-                    ViewBag.Message = "Student was not found.";
-                    return View();
+                    return View(viewModel);
                 }
             }
-            else
+            catch (DbUpdateException ex)
             {
-                return View(viewModel);
+                // Log the exception details
+                Console.WriteLine($"DbUpdateException: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
+                // Optionally, log additional details
+                // Log the SQL statement causing the exception
+                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
+                ModelState.AddModelError("", "An error occurred while editing data in the database.");
+
+                ViewBag.Message = "An error occurred while editing data in the database.";
+                return View();
             }
+            
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(Guid StudentId)
         {
-            var student = await _context.Students
+            try
+            {
+                var student = await _context.Students
                 .Where(s => s.StudentId == StudentId)
                 .Select(s => new StudentDetailViewModel
                 {
@@ -150,45 +205,79 @@ namespace OnlineCampus.Controllers
                     FirstName = s.FirstName,
                     LastName = s.LastName,
                 })
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
-            if (student != null)
-            {
-                return View(student);
+                if (student != null)
+                {
+                    return View(student);
+                }
+                else
+                {
+                    ViewBag.Message = "The Student has not been found.";
+                    return View();
+                }
             }
-            else
+            catch (DbUpdateException ex)
             {
-                ViewBag.Message = "The Student has not been found.";
+                // Log the exception details
+                Console.WriteLine($"DbUpdateException: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
+                // Optionally, log additional details
+                // Log the SQL statement causing the exception
+                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
+                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
+
+                ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
             }
+            
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(StudentDetailViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var studentToDelete = await _context.Students
-                    .Where(s => s.StudentId == viewModel.StudentId)
-                    .FirstOrDefaultAsync();
-
-                if (studentToDelete != null)
+                if (ModelState.IsValid)
                 {
-                    _context.Remove(studentToDelete);
-                    await _context.SaveChangesAsync();
+                    var studentToDelete = await _context.Students
+                        .Where(s => s.StudentId == viewModel.StudentId)
+                        .FirstOrDefaultAsync();
 
-                    return RedirectToAction("Index");
+                    if (studentToDelete != null)
+                    {
+                        _context.Remove(studentToDelete);
+                        await _context.SaveChangesAsync();
+
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        ViewBag.Message = "Student was not found.";
+                        return View();
+                    }
                 }
                 else
                 {
-                    ViewBag.Message = "Student was not found.";
-                    return View();
+                    return View(viewModel);
                 }
             }
-            else
+            catch (DbUpdateException ex)
             {
-                return View(viewModel);
+                // Log the exception details
+                Console.WriteLine($"DbUpdateException: {ex.Message}");
+                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+
+                // Optionally, log additional details
+                // Log the SQL statement causing the exception
+                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
+                ModelState.AddModelError("", "An error occurred while removing data from the database.");
+
+                ViewBag.Message = "An error occurred while removing data from the database.";
+                return View();
             }
         }
     }
