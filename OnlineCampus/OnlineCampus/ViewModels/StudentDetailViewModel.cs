@@ -11,5 +11,8 @@ namespace OnlineCampus.ViewModels
 
         [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; } = string.Empty;
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = new byte[0];
     }
 }

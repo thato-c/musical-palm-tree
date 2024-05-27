@@ -158,10 +158,19 @@ namespace OnlineCampus.Controllers
                             studentToEdit.FirstName = viewModel.FirstName;
                             studentToEdit.LastName = viewModel.LastName;
 
-                            _context.Update(studentToEdit);
-                            await _context.SaveChangesAsync();
+                            try
+                            {
+                                _context.Update(studentToEdit);
+                                await _context.SaveChangesAsync();
 
-                            return RedirectToAction("Index");
+                                return RedirectToAction("Index");
+                            }
+                            catch (DbUpdateConcurrencyException ex)
+                            {
+                                Console.WriteLine("Something's wrong.");
+                                return View(viewModel);
+                            }
+                            
                         }
                     }
                     else
