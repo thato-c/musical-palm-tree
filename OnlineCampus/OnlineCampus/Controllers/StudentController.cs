@@ -16,13 +16,19 @@ namespace OnlineCampus.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string sortOrder)
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
             try
             {
                 ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+                ViewData["CurrentFilter"] = searchString;
                 var students = from s in _context.Students select s;
 
+                if (!String.IsNullOrEmpty(searchString))
+                { 
+                    students = students.Where(s => s.LastName.Contains(searchString)
+                                                || s.FirstName.Contains(searchString));
+                }
                 switch (sortOrder)
                 {
                     case "name_desc":
