@@ -11,7 +11,7 @@ namespace OnlineCampus.Models
         public string LastName { get; set; } = string.Empty;
 
         [Timestamp]
-        public byte[] RowVersion { get; set; } = new byte[0];
+        public byte[] RowVersion { get; set; }
 
         public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
     }

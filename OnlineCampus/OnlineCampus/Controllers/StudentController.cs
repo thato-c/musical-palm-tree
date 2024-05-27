@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
+using OnlineCampus.Models;
 using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
@@ -104,6 +105,7 @@ namespace OnlineCampus.Controllers
                     StudentId = s.StudentId,
                     FirstName = s.FirstName,
                     LastName = s.LastName,
+                    RowVersion = s.RowVersion,
                 })
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -155,6 +157,7 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
+                            _context.Entry(studentToEdit).Property("RowVersion").OriginalValue = viewModel.RowVersion;
                             studentToEdit.FirstName = viewModel.FirstName;
                             studentToEdit.LastName = viewModel.LastName;
 
@@ -167,10 +170,38 @@ namespace OnlineCampus.Controllers
                             }
                             catch (DbUpdateConcurrencyException ex)
                             {
-                                Console.WriteLine("Something's wrong.");
+                                var exceptionEntry = ex.Entries.Single();
+                                var databaseEntry = exceptionEntry.GetDatabaseValues();
+                                if (databaseEntry == null)
+                                {
+                                    ModelState.AddModelError(string.Empty, "Unable to save changes. The student was deleted by another user.");
+                                }
+                                else
+                                {
+                                    var databaseValues = (Student)databaseEntry.ToObject();
+
+                                    if (databaseValues.FirstName != studentToEdit.FirstName)
+                                    {
+                                        ModelState.AddModelError("FirstName", $"Current Value: {databaseValues.FirstName}");
+                                    }
+                                    if (databaseValues.LastName != studentToEdit.LastName)
+                                    {
+                                        ModelState.AddModelError("LastName", $"Current Value: {databaseValues.LastName}");
+                                    }
+
+                                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                        + "was modified by another user after you got the original value. The "
+                                        + "edit operation was canceled and the current values in the database "
+                                        + "have been displayed. If you still want to edit this record, click "
+                                        + "the Save button again. Otherwise click the Back to List hyperlink.");
+
+                                    viewModel.StudentId = databaseValues.StudentId;
+                                    viewModel.FirstName = databaseValues.FirstName; 
+                                    viewModel.LastName = databaseValues.LastName;
+                                    viewModel.RowVersion = databaseValues.RowVersion;
+                                }
                                 return View(viewModel);
                             }
-                            
                         }
                     }
                     else

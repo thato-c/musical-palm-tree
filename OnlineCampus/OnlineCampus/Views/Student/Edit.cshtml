@@ -5,7 +5,7 @@
 
 <form asp-asp-controller="Student" asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
-    <div asp-asp-validation-summary="All" class="text-danger"></div>
+    <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="StudentId" />
     <input type="hidden" asp-for="RowVersion" />
 
