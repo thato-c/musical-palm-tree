@@ -48,7 +48,7 @@ namespace OnlineCampus.Controllers
                         students.OrderBy(s => s.LastName);
                         break;
                 }
-                int pageSize = 3;
+                int pageSize = 8;
                 return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
             }
             catch (DbUpdateException ex)
