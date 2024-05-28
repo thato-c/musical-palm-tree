@@ -16,7 +16,7 @@ namespace OnlineCampus.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(string sortOrder, string searchString,string currentFilter, int? pageNumber)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {
             try
             {
@@ -35,7 +35,7 @@ namespace OnlineCampus.Controllers
                 var students = from s in _context.Students select s;
 
                 if (!String.IsNullOrEmpty(searchString))
-                { 
+                {
                     students = students.Where(s => s.LastName.Contains(searchString)
                                                 || s.FirstName.Contains(searchString));
                 }
@@ -44,7 +44,7 @@ namespace OnlineCampus.Controllers
                     case "name_desc":
                         students = students.OrderByDescending(s => s.LastName);
                         break;
-                    default: 
+                    default:
                         students.OrderBy(s => s.LastName);
                         break;
                 }
@@ -64,7 +64,7 @@ namespace OnlineCampus.Controllers
 
                 ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
-            }   
+            }
         }
 
         [HttpGet]
@@ -176,52 +176,55 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
-                            _context.Entry(studentToEdit).Property("RowVersion").OriginalValue = viewModel.RowVersion;
-                            studentToEdit.FirstName = viewModel.FirstName;
-                            studentToEdit.LastName = viewModel.LastName;
-
-                            try
+                            if (await TryUpdateModelAsync<Student>(
+                                studentToEdit,
+                                "",
+                                s => s.FirstName, s => s.LastName))
                             {
-                                _context.Update(studentToEdit);
-                                await _context.SaveChangesAsync();
+                                _context.Entry(studentToEdit).Property("RowVersion").OriginalValue = viewModel.RowVersion;
 
-                                return RedirectToAction("Index");
-                            }
-                            catch (DbUpdateConcurrencyException ex)
-                            {
-                                var exceptionEntry = ex.Entries.Single();
-                                var databaseEntry = exceptionEntry.GetDatabaseValues();
-                                if (databaseEntry == null)
+                                try
                                 {
-                                    ModelState.AddModelError(string.Empty, "Unable to save changes. The student was deleted by another user.");
+                                    _context.Update(studentToEdit);
+                                    await _context.SaveChangesAsync();
                                 }
-                                else
+                                catch (DbUpdateConcurrencyException ex)
                                 {
-                                    var databaseValues = (Student)databaseEntry.ToObject();
-
-                                    if (databaseValues.FirstName != studentToEdit.FirstName)
+                                    var exceptionEntry = ex.Entries.Single();
+                                    var databaseEntry = exceptionEntry.GetDatabaseValues();
+                                    if (databaseEntry == null)
                                     {
-                                        ModelState.AddModelError("FirstName", $"Current Value: {databaseValues.FirstName}");
+                                        ModelState.AddModelError(string.Empty, "Unable to save changes. The student was deleted by another user.");
                                     }
-                                    if (databaseValues.LastName != studentToEdit.LastName)
+                                    else
                                     {
-                                        ModelState.AddModelError("LastName", $"Current Value: {databaseValues.LastName}");
+                                        var databaseValues = (Student)databaseEntry.ToObject();
+
+                                        if (databaseValues.FirstName != studentToEdit.FirstName)
+                                        {
+                                            ModelState.AddModelError("FirstName", $"Current Value: {databaseValues.FirstName}");
+                                        }
+                                        if (databaseValues.LastName != studentToEdit.LastName)
+                                        {
+                                            ModelState.AddModelError("LastName", $"Current Value: {databaseValues.LastName}");
+                                        }
+
+                                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                            + "was modified by another user after you got the original value. The "
+                                            + "edit operation was canceled and the current values in the database "
+                                            + "have been displayed. If you still want to edit this record, click "
+                                            + "the Save button again. Otherwise click the Back to List hyperlink.");
+
+                                        //TODO: Update the viewModel values to the newly read database values
+                                        viewModel.StudentId = databaseValues.StudentId;
+                                        viewModel.FirstName = databaseValues.FirstName;
+                                        viewModel.LastName = databaseValues.LastName;
+                                        viewModel.RowVersion = databaseValues.RowVersion;
                                     }
-
-                                    ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                        + "was modified by another user after you got the original value. The "
-                                        + "edit operation was canceled and the current values in the database "
-                                        + "have been displayed. If you still want to edit this record, click "
-                                        + "the Save button again. Otherwise click the Back to List hyperlink.");
-
-                                    //TODO: Update the viewModel values to the newly read database values
-                                    viewModel.StudentId = databaseValues.StudentId;
-                                    viewModel.FirstName = databaseValues.FirstName; 
-                                    viewModel.LastName = databaseValues.LastName;
-                                    viewModel.RowVersion = databaseValues.RowVersion;
+                                    return View(viewModel);
                                 }
-                                return View(viewModel);
                             }
+                            return RedirectToAction("Index");
                         }
                     }
                     else
@@ -249,7 +252,6 @@ namespace OnlineCampus.Controllers
                 ViewBag.Message = "An error occurred while editing data in the database.";
                 return View();
             }
-            
         }
 
         [HttpGet]
@@ -292,7 +294,7 @@ namespace OnlineCampus.Controllers
                 ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
             }
-            
+
         }
 
         [HttpPost]
