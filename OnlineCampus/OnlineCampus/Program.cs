@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
+using OnlineCampus.Interfaces;
+using OnlineCampus.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<EnrolmentDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EnrolmentContext"))
 );
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 
 builder.Services.AddControllersWithViews();
 

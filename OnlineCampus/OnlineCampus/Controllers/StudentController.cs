@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
+using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
+using OnlineCampus.Repositories;
 using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
@@ -10,8 +12,11 @@ namespace OnlineCampus.Controllers
     {
         private readonly EnrolmentDBContext _context;
 
-        public StudentController(EnrolmentDBContext context)
+        private IStudentRepository studentRepository;
+
+        public StudentController(EnrolmentDBContext context, IStudentRepository studentRepository)
         {
+            this.studentRepository = studentRepository;
             _context = context;
         }
 
@@ -32,7 +37,8 @@ namespace OnlineCampus.Controllers
                 }
 
                 ViewData["CurrentFilter"] = searchString;
-                var students = from s in _context.Students select s;
+                var students = from s in studentRepository.GetStudents() 
+                               select s;
 
                 if (!String.IsNullOrEmpty(searchString))
                 {
@@ -49,7 +55,7 @@ namespace OnlineCampus.Controllers
                         break;
                 }
                 int pageSize = 8;
-                return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
+                return View(await PaginatedList<Student>.CreateAsync((IQueryable<Student>)students, pageNumber ?? 1, pageSize));
             }
             catch (DbUpdateException ex)
             {
@@ -89,9 +95,8 @@ namespace OnlineCampus.Controllers
                     };
 
                     // Add and save the new student to the database
-                    _context.Students.Add(Student);
-                    await _context.SaveChangesAsync();
-
+                    studentRepository.InsertStudent(Student);
+                    studentRepository.Save();
                     return RedirectToAction("Index");
                 }
                 return View(viewModel);
@@ -117,27 +122,23 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var student = await _context.Students
-                .Where(s => s.StudentId == StudentId)
-                .Select(s => new StudentDetailViewModel
-                {
-                    StudentId = s.StudentId,
-                    FirstName = s.FirstName,
-                    LastName = s.LastName,
-                    RowVersion = s.RowVersion,
-                })
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+                var student = await studentRepository.GetStudentByIdAsync(StudentId);
 
-                if (student != null)
-                {
-                    return View(student);
-                }
-                else
+                if (student == null)
                 {
                     ViewBag.Message = "The Student has not been found.";
                     return View();
                 }
+
+                var viewModel = new StudentDetailViewModel
+                {
+                    StudentId = student.StudentId,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    RowVersion = student.RowVersion
+                };
+
+                return View(viewModel);
             }
             catch (DbUpdateException ex)
             {
@@ -176,17 +177,17 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
+                            _context.Entry(studentToEdit).Property("RowVersion").OriginalValue = viewModel.RowVersion;
+
                             if (await TryUpdateModelAsync<Student>(
                                 studentToEdit,
                                 "",
                                 s => s.FirstName, s => s.LastName))
                             {
-                                _context.Entry(studentToEdit).Property("RowVersion").OriginalValue = viewModel.RowVersion;
-
                                 try
                                 {
-                                    _context.Update(studentToEdit);
-                                    await _context.SaveChangesAsync();
+                                    studentRepository.UpdateStudent(studentToEdit);
+                                    studentRepository.Save();
                                 }
                                 catch (DbUpdateConcurrencyException ex)
                                 {
@@ -195,10 +196,18 @@ namespace OnlineCampus.Controllers
                                     if (databaseEntry == null)
                                     {
                                         ModelState.AddModelError(string.Empty, "Unable to save changes. The student was deleted by another user.");
+                                        return View(viewModel);
                                     }
                                     else
                                     {
                                         var databaseValues = (Student)databaseEntry.ToObject();
+                                        var updatedStudent = new StudentDetailViewModel
+                                        {
+                                            StudentId = databaseValues.StudentId,
+                                            FirstName = databaseValues.FirstName,
+                                            LastName = databaseValues.LastName,
+                                            RowVersion = databaseValues.RowVersion,
+                                        };
 
                                         if (databaseValues.FirstName != studentToEdit.FirstName)
                                         {
@@ -215,13 +224,9 @@ namespace OnlineCampus.Controllers
                                             + "have been displayed. If you still want to edit this record, click "
                                             + "the Save button again. Otherwise click the Back to List hyperlink.");
 
-                                        //TODO: Update the viewModel values to the newly read database values
-                                        viewModel.StudentId = databaseValues.StudentId;
-                                        viewModel.FirstName = databaseValues.FirstName;
-                                        viewModel.LastName = databaseValues.LastName;
-                                        viewModel.RowVersion = databaseValues.RowVersion;
+                                        return View(updatedStudent);
                                     }
-                                    return View(viewModel);
+                                    
                                 }
                             }
                             return RedirectToAction("Index");
@@ -259,26 +264,23 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var student = await _context.Students
-                .Where(s => s.StudentId == StudentId)
-                .Select(s => new StudentDetailViewModel
-                {
-                    StudentId = s.StudentId,
-                    FirstName = s.FirstName,
-                    LastName = s.LastName,
-                })
-                .AsNoTracking()
-                .FirstOrDefaultAsync();
+                var student = await studentRepository.GetStudentByIdAsync(StudentId);
 
-                if (student != null)
-                {
-                    return View(student);
-                }
-                else
+                if (student == null)
                 {
                     ViewBag.Message = "The Student has not been found.";
                     return View();
                 }
+
+                var viewModel = new StudentDetailViewModel
+                {
+                    StudentId = student.StudentId,
+                    FirstName = student.FirstName,
+                    LastName = student.LastName,
+                    RowVersion = student.RowVersion
+                };
+
+                return View(viewModel);
             }
             catch (DbUpdateException ex)
             {
@@ -311,12 +313,12 @@ namespace OnlineCampus.Controllers
 
                     if (studentToDelete != null)
                     {
-                        _context.Remove(studentToDelete);
-                        await _context.SaveChangesAsync();
+                        await studentRepository.DeleteStudent(viewModel.StudentId);
+                        await studentRepository.SaveAsync();
 
                         return RedirectToAction("Index");
                     }
-                    else
+                    else 
                     {
                         ViewBag.Message = "Student was not found.";
                         return View();
