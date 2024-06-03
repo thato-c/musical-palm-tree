@@ -48,6 +48,11 @@ namespace OnlineCampus.Repositories
             context.Entry(student).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
         }
 
+        public void SetOriginalRowVersion(Student student, byte[] rowVersion)
+        {
+            context.Entry(student).Property("RowVersion").OriginalValue = rowVersion;
+        }
+
         public void Save()
         {
             context.SaveChanges();

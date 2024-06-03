@@ -10,14 +10,11 @@ namespace OnlineCampus.Controllers
 {
     public class StudentController : Controller
     {
-        private readonly EnrolmentDBContext _context;
-
         private IStudentRepository studentRepository;
 
-        public StudentController(EnrolmentDBContext context, IStudentRepository studentRepository)
+        public StudentController(IStudentRepository studentRepository)
         {
             this.studentRepository = studentRepository;
-            _context = context;
         }
 
         [HttpGet]
@@ -81,7 +78,7 @@ namespace OnlineCampus.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(StudentViewModel viewModel)
+        public IActionResult Create(StudentViewModel viewModel)
         {
             try
             {
@@ -164,12 +161,11 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var studentToEdit = await _context.Students
-                        .Where(s => s.StudentId == viewModel.StudentId)
-                        .FirstOrDefaultAsync();
+                    var studentToEdit = await studentRepository.GetStudentByIdAsync(viewModel.StudentId);
 
                     if (studentToEdit != null)
                     {
+                        
                         if (studentToEdit.FirstName == viewModel.FirstName && studentToEdit.LastName == viewModel.LastName)
                         {
                             ModelState.AddModelError(string.Empty, "Data has not been modified");
@@ -177,7 +173,7 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
-                            _context.Entry(studentToEdit).Property("RowVersion").OriginalValue = viewModel.RowVersion;
+                            studentRepository.SetOriginalRowVersion(studentToEdit, viewModel.RowVersion);
 
                             if (await TryUpdateModelAsync<Student>(
                                 studentToEdit,
@@ -226,7 +222,6 @@ namespace OnlineCampus.Controllers
 
                                         return View(updatedStudent);
                                     }
-                                    
                                 }
                             }
                             return RedirectToAction("Index");
@@ -307,9 +302,7 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var studentToDelete = await _context.Students
-                        .Where(s => s.StudentId == viewModel.StudentId)
-                        .FirstOrDefaultAsync();
+                    var studentToDelete = await studentRepository.GetStudentByIdAsync(viewModel.StudentId);
 
                     if (studentToDelete != null)
                     {
