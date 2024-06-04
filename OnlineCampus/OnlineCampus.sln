@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineCampus", "OnlineCampus\OnlineCampus.csproj", "{0A9A8E07-EC3D-4176-90ED-7C23CA1E7BCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineCampus", "OnlineCampus\OnlineCampus.csproj", "{0A9A8E07-EC3D-4176-90ED-7C23CA1E7BCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineCampus.Tests", "OnlineCampus.Tests\OnlineCampus.Tests.csproj", "{07B376DF-91FE-414C-B50F-B853B1BEA992}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{0A9A8E07-EC3D-4176-90ED-7C23CA1E7BCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A9A8E07-EC3D-4176-90ED-7C23CA1E7BCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A9A8E07-EC3D-4176-90ED-7C23CA1E7BCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07B376DF-91FE-414C-B50F-B853B1BEA992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07B376DF-91FE-414C-B50F-B853B1BEA992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07B376DF-91FE-414C-B50F-B853B1BEA992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07B376DF-91FE-414C-B50F-B853B1BEA992}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
