@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "XKHKkgjyuEhO1OC3mN2lB7uzO0Pw7EQqY6W9HLvnKXPKEIb1DuOr+MhjwsC4VBL5iRpG0MwVGz2H5jyRTh/mUQ==",
+  "dgSpecHash": "czshYO+vBuer54rv9X255hQSJw8ru0udhQS1egAZFt3jSXzXyMsewI6E3V9RZzLQcUywJAFShPN8SFV8tS58QQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\tchit\\OneDrive\\musical-palm-tree\\OnlineCampus\\OnlineCampus\\OnlineCampus.csproj",
   "expectedPackageFiles": [
@@ -43,6 +43,7 @@
     "C:\\Users\\tchit\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\mono.texttemplating\\2.2.1\\mono.texttemplating.2.2.1.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\moq\\4.20.70\\moq.4.20.70.nupkg.sha512",
+    "C:\\Users\\tchit\\.nuget\\packages\\moq.entityframeworkcore\\6.0.1.4\\moq.entityframeworkcore.6.0.1.4.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\system.codedom\\4.4.0\\system.codedom.4.4.0.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\system.configuration.configurationmanager\\6.0.1\\system.configuration.configurationmanager.6.0.1.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\system.diagnostics.diagnosticsource\\6.0.0\\system.diagnostics.diagnosticsource.6.0.0.nupkg.sha512",

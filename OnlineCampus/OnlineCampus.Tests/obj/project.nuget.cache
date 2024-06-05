@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "62A2v9qhk8oQ7rLOkzq5EwUuIR6TfGKeJpGs6Zh395RCNQLkpvnPysUxy1qYA5XQdlFmXmx6FjoKVvRA7ehsFw==",
+  "dgSpecHash": "Re83pyqwhcVeZuJcMKjY+n/CD9fEOfFqlVpnc22fEPoscDBjhwJNB9Fg7G3WkwDlo+Ny1LCF/YJYUSNJyaezaQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\tchit\\OneDrive\\musical-palm-tree\\OnlineCampus\\OnlineCampus.Tests\\OnlineCampus.Tests.csproj",
   "expectedPackageFiles": [
@@ -43,6 +43,7 @@
     "C:\\Users\\tchit\\.nuget\\packages\\microsoft.testplatform.testhost\\17.1.0\\microsoft.testplatform.testhost.17.1.0.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\microsoft.win32.systemevents\\6.0.0\\microsoft.win32.systemevents.6.0.0.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\moq\\4.20.70\\moq.4.20.70.nupkg.sha512",
+    "C:\\Users\\tchit\\.nuget\\packages\\moq.entityframeworkcore\\6.0.1.4\\moq.entityframeworkcore.6.0.1.4.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\newtonsoft.json\\9.0.1\\newtonsoft.json.9.0.1.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\nuget.frameworks\\5.11.0\\nuget.frameworks.5.11.0.nupkg.sha512",
     "C:\\Users\\tchit\\.nuget\\packages\\system.collections\\4.0.11\\system.collections.4.0.11.nupkg.sha512",

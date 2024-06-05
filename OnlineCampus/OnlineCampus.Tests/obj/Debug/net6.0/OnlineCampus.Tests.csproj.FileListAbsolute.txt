@@ -155,3 +155,4 @@ C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\De
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Debug\net6.0\OnlineCampus.Tests.pdb
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Debug\net6.0\OnlineCampus.Tests.genruntimeconfig.cache
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Debug\net6.0\ref\OnlineCampus.Tests.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\bin\Debug\net6.0\Moq.EntityFrameworkCore.dll

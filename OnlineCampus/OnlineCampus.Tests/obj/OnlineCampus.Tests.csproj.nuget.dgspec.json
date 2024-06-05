@@ -62,6 +62,10 @@
               "target": "Package",
               "version": "[4.20.70, )"
             },
+            "Moq.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.1.4, )"
+            },
             "coverlet.collector": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
@@ -162,6 +166,10 @@
             "Moq": {
               "target": "Package",
               "version": "[4.20.70, )"
+            },
+            "Moq.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.1.4, )"
             },
             "xunit": {
               "target": "Package",

@@ -10,6 +10,97 @@ namespace OnlineCampus.Tests.Controller.Tests
 {
     public class StudentControllerTests
     {
+        private Mock<IStudentRepository> mockStudentRepository;
+        private StudentController controller;
+
+        public StudentControllerTests()
+        {
+            mockStudentRepository = new Mock<IStudentRepository>();
+            controller = new StudentController(mockStudentRepository.Object);
+        }
+
+        [Fact]
+        public async Task Index_SortOrderNameDesc_SortsStudentsByNameDescending()
+        {
+            // Arrange
+            var students = new List<Student>
+            {
+                new Student {FirstName = "John", LastName = "Smith"},
+                new Student {FirstName = "Jane", LastName = "Doe"}
+            }.AsQueryable();
+
+            mockStudentRepository.Setup(repo => repo.GetStudents()).Returns(students);
+
+            // Act
+            var result = await controller.Index("name_desc", null, null, 1) as ViewResult;
+            var model = result.Model as PaginatedList<Student>;
+
+            // Assert
+            Assert.NotNull(model);
+            Assert.Equal("Smith", model[0].LastName);
+            Assert.Equal("Doe", model[1].LastName);
+        }
+
+        [Fact]
+        public async Task Index_SearchStringFilterStudents()
+        {
+            // Arrange
+            var students = new List<Student>
+            {
+                new Student {FirstName = "John", LastName = "Smith"},
+                new Student {FirstName = "Jane", LastName = "Doe"}
+            }.AsQueryable();
+
+            mockStudentRepository.Setup(repo => repo.GetStudents()).Returns(students);
+
+            // Act
+            var result = await controller.Index(null, "Doe", null, 1) as ViewResult;
+            var model = result.Model as PaginatedList<Student>;
+
+            // Assert
+            Assert.NotNull(model);
+            Assert.Single(model);
+            Assert.Equal("Doe", model[0].LastName);
+        }
+
+        [Fact]
+        public async Task Index_PaginationWorksCorrectly()
+        {
+            // Arrange
+            var students = new List<Student>();
+            for (int i = 1; i <= 20; i++)
+            {
+                students.Add(new Student { FirstName = "FirstName" + i, LastName = "LastName" + i });
+            }
+            mockStudentRepository.Setup(repo => repo.GetStudents()).Returns(students.AsQueryable());
+
+            // Act
+            var result = await controller.Index(null, null, null, 2) as ViewResult;
+            var model = result.Model as PaginatedList<Student>;
+
+            // Assert
+            Assert.NotNull(model);
+            Assert.Equal(8, model.Count);
+            Assert.Equal("FirstName9", model[0].FirstName);
+        }
+
+        [Fact]
+        public async Task Index_DbUpdateException_SetsViewBagMessage()
+        {
+            // Arrange
+            mockStudentRepository.Setup(repo => repo.GetStudents())
+                .Throws(new DbUpdateException("Test exception", new Exception("Inner exception")));
+
+            // Act
+            var result = await controller.Index(null, null, null, 1) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("An error occurred while retrieving data from the database.", controller.ViewBag.Message);
+            Assert.Equal("An error occurred while retrieving data from the database.", controller.ModelState[""].Errors[0].ErrorMessage);
+
+        }
+
         [Fact]
         public void Create_ReturnsViewResult()
         {
@@ -91,6 +182,80 @@ namespace OnlineCampus.Tests.Controller.Tests
             Assert.Null(viewResult.Model); // ensure no model is returned
             Assert.Equal("An error occurred while retrieving data from the database.", controller.ViewBag.Message); // Ensure ViewBag.Message is set
             Assert.True(controller.ModelState.ContainsKey("")); // Ensure a model error is added
+        }
+
+        [Fact]
+        public async Task Edit_ModelStateInvalid_ReturnsViewWithViewModel()
+        {
+            // Arrange 
+            var controller = new StudentController(mockStudentRepository.Object);
+            controller.ModelState.AddModelError("Error", "Model state is invalid");
+            var viewModel = new StudentDetailViewModel();
+
+            // Act
+            var result = await controller.Edit(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(viewModel, result.Model);
+        }
+
+        [Fact]
+        public async Task Edit_StudentNotFound_SetsViewBagMessage()
+        {
+            // Arrange
+            var studentId = Guid.NewGuid();
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentDetailViewModel { StudentId = studentId };
+            mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId))
+                .ReturnsAsync((Student)null);
+
+            // Act
+            var result = await controller.Edit(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Student was not found.", controller.ViewBag.Message);
+        }
+
+        [Fact]
+        public async Task Edit_StudentDataUnchanged_AddsModelErrorAndReturnsView()
+        {
+            // Arrnage
+            var studentId = Guid.NewGuid();
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
+            var student = new Student { StudentId = studentId, FirstName = "John", LastName = "Doe" };
+            mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync(student);
+
+            // Act
+            var result = await controller.Edit(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(viewModel, result.Model);
+            Assert.Equal("Data has not been modified", controller.ModelState[string.Empty].Errors[0].ErrorMessage);
+
+        }
+
+        [Fact]
+        public async Task Edit_DbUpdateConcurrencyException_HandlesConcurrency()
+        {
+            // Arrange
+            var studentId = Guid.NewGuid();
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
+            var student = new Student { StudentId = studentId, FirstName = "John", LastName = "Doe", RowVersion = viewModel.RowVersion };
+            mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync((Student)student);
+            mockStudentRepository.Setup(repo => repo.UpdateStudent(student)).Throws(new DbUpdateConcurrencyException());
+
+            // Act
+            var result = await controller.Edit(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(viewModel, result.Model);
+            Assert.Contains(controller.ModelState[string.Empty].Errors, e => e.ErrorMessage.Contains("Data has not been modified"));
         }
 
         [Fact]

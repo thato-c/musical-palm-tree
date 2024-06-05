@@ -10,6 +10,7 @@
         "dependencies": {
           "Microsoft.NET.Test.Sdk": "17.1.0",
           "Moq": "4.20.70",
+          "Moq.EntityFrameworkCore": "6.0.1.4",
           "OnlineCampus": "1.0.0",
           "coverlet.collector": "3.1.2",
           "xunit": "2.8.1",
@@ -674,6 +675,18 @@
           }
         }
       },
+      "Moq.EntityFrameworkCore/6.0.1.4": {
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "7.0.13",
+          "Moq": "4.20.70"
+        },
+        "runtime": {
+          "lib/net6.0/Moq.EntityFrameworkCore.dll": {
+            "assemblyVersion": "5.0.0.0",
+            "fileVersion": "5.0.2.0"
+          }
+        }
+      },
       "Newtonsoft.Json/9.0.1": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
@@ -1213,6 +1226,7 @@
           "Microsoft.EntityFrameworkCore": "7.0.13",
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.13",
           "Moq": "4.20.70",
+          "Moq.EntityFrameworkCore": "6.0.1.4",
           "xunit": "2.8.1"
         },
         "runtime": {
@@ -1499,6 +1513,13 @@
       "sha512": "sha512-4rNnAwdpXJBuxqrOCzCyICXHSImOTRktCgCWXWykuF1qwoIsVvEnR7PjbMk/eLOxWvhmj5Kwt+kDV3RGUYcNwg==",
       "path": "moq/4.20.70",
       "hashPath": "moq.4.20.70.nupkg.sha512"
+    },
+    "Moq.EntityFrameworkCore/6.0.1.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-AU2ksid0n2VPmG+qKSUXs4ZoZNbZXdLs/mkuGQ7JBAefzYNF/6qMJlJwDTF2iW2C0guiaLqtNzjPiAAJKvSJlQ==",
+      "path": "moq.entityframeworkcore/6.0.1.4",
+      "hashPath": "moq.entityframeworkcore.6.0.1.4.nupkg.sha512"
     },
     "Newtonsoft.Json/9.0.1": {
       "type": "package",

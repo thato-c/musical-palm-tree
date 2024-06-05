@@ -883,6 +883,19 @@
           }
         }
       },
+      "Moq.EntityFrameworkCore/6.0.1.4": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "6.0.5",
+          "Moq": "4.18.1"
+        },
+        "compile": {
+          "lib/net6.0/Moq.EntityFrameworkCore.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Moq.EntityFrameworkCore.dll": {}
+        }
+      },
       "Newtonsoft.Json/9.0.1": {
         "type": "package",
         "dependencies": {
@@ -1958,6 +1971,7 @@
           "Microsoft.EntityFrameworkCore": "7.0.13",
           "Microsoft.EntityFrameworkCore.SqlServer": "7.0.13",
           "Moq": "4.20.70",
+          "Moq.EntityFrameworkCore": "6.0.1.4",
           "xunit": "2.8.1"
         },
         "compile": {
@@ -3465,6 +3479,19 @@
         "moq.4.20.70.nupkg.sha512",
         "moq.nuspec",
         "readme.md"
+      ]
+    },
+    "Moq.EntityFrameworkCore/6.0.1.4": {
+      "sha512": "AU2ksid0n2VPmG+qKSUXs4ZoZNbZXdLs/mkuGQ7JBAefzYNF/6qMJlJwDTF2iW2C0guiaLqtNzjPiAAJKvSJlQ==",
+      "type": "package",
+      "path": "moq.entityframeworkcore/6.0.1.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net6.0/Moq.EntityFrameworkCore.dll",
+        "moq.entityframeworkcore.6.0.1.4.nupkg.sha512",
+        "moq.entityframeworkcore.nuspec"
       ]
     },
     "Newtonsoft.Json/9.0.1": {
@@ -6381,6 +6408,7 @@
     "net6.0": [
       "Microsoft.NET.Test.Sdk >= 17.1.0",
       "Moq >= 4.20.70",
+      "Moq.EntityFrameworkCore >= 6.0.1.4",
       "OnlineCampus >= 1.0.0",
       "coverlet.collector >= 3.1.2",
       "xunit >= 2.8.1",
@@ -6448,6 +6476,10 @@
           "Moq": {
             "target": "Package",
             "version": "[4.20.70, )"
+          },
+          "Moq.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[6.0.1.4, )"
           },
           "coverlet.collector": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

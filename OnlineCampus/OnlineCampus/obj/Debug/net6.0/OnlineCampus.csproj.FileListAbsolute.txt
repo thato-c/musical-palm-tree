@@ -89,3 +89,4 @@ C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Debug\ne
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Debug\net6.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Debug\net6.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Debug\net6.0\xunit.runner.utility.netcoreapp10.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Debug\net6.0\Moq.EntityFrameworkCore.dll

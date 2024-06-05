@@ -673,6 +673,19 @@
           }
         }
       },
+      "Moq.EntityFrameworkCore/6.0.1.4": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.EntityFrameworkCore": "6.0.5",
+          "Moq": "4.18.1"
+        },
+        "compile": {
+          "lib/net6.0/Moq.EntityFrameworkCore.dll": {}
+        },
+        "runtime": {
+          "lib/net6.0/Moq.EntityFrameworkCore.dll": {}
+        }
+      },
       "System.CodeDom/4.4.0": {
         "type": "package",
         "compile": {
@@ -2185,6 +2198,19 @@
         "readme.md"
       ]
     },
+    "Moq.EntityFrameworkCore/6.0.1.4": {
+      "sha512": "AU2ksid0n2VPmG+qKSUXs4ZoZNbZXdLs/mkuGQ7JBAefzYNF/6qMJlJwDTF2iW2C0guiaLqtNzjPiAAJKvSJlQ==",
+      "type": "package",
+      "path": "moq.entityframeworkcore/6.0.1.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "README.md",
+        "lib/net6.0/Moq.EntityFrameworkCore.dll",
+        "moq.entityframeworkcore.6.0.1.4.nupkg.sha512",
+        "moq.entityframeworkcore.nuspec"
+      ]
+    },
     "System.CodeDom/4.4.0": {
       "sha512": "2sCCb7doXEwtYAbqzbF/8UAeDRMNmPaQbU2q50Psg1J9KzumyVVCgKQY8s53WIPTufNT0DpSe9QRvVjOzfDWBA==",
       "type": "package",
@@ -3272,6 +3298,7 @@
       "Microsoft.EntityFrameworkCore.SqlServer >= 7.0.13",
       "Microsoft.EntityFrameworkCore.Tools >= 7.0.13",
       "Moq >= 4.20.70",
+      "Moq.EntityFrameworkCore >= 6.0.1.4",
       "xunit >= 2.8.1",
       "xunit.runner.visualstudio >= 2.4.3"
     ]
@@ -3343,6 +3370,10 @@
           "Moq": {
             "target": "Package",
             "version": "[4.20.70, )"
+          },
+          "Moq.EntityFrameworkCore": {
+            "target": "Package",
+            "version": "[6.0.1.4, )"
           },
           "xunit": {
             "target": "Package",
