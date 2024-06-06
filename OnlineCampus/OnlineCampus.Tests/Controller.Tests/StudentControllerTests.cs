@@ -117,6 +117,57 @@ namespace OnlineCampus.Tests.Controller.Tests
         }
 
         [Fact]
+        public void Create_ModelStateInvalid_ReturnsViewWithViewModel()
+        {
+            // Arrange
+            var controller = new StudentController(mockStudentRepository.Object);
+            controller.ModelState.AddModelError("Error", "Model state is invalid");
+            var viewModel = new StudentViewModel();
+
+            // Act
+            var result = controller.Create(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(viewModel, result.Model);
+        }
+
+        [Fact]
+        public void Create_SuccessfulCreation_RedirectsToToken()
+        {
+            // Arrange
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentViewModel { FirstName = "John", LastName = "Doe" };
+
+            // Act
+            var result = controller.Create(viewModel) as RedirectToActionResult;
+
+            // AAssert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            mockStudentRepository.Verify(repo => repo.InsertStudent(It.Is<Student> (s => s.FirstName == "John" && s.LastName == "Doe")), Times.Once);
+            mockStudentRepository.Verify(repo => repo.Save(), Times.Once);
+        }
+
+        [Fact]
+        public void Create_DbUpdateException_SetsViewBagMessage()
+        {
+            // Arrange
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentViewModel { FirstName = "John", LastName = "Doe" };
+            mockStudentRepository.Setup(repo => repo.InsertStudent(It.IsAny<Student>()))
+                .Throws(new DbUpdateException("Test exception", new Exception("Inner exception")));
+
+            // Act
+            var result = controller.Create(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("An error occurred while inserting data into the database.", controller.ViewBag.Message);
+            Assert.Equal("An error occurred while inserting data into the database.", controller.ModelState[""].Errors[0].ErrorMessage);
+        }
+
+        [Fact]
         public async Task Edit_StudentNotFound_SetsViewBagMessageAndReturnsView()
         {
             // Arrange
@@ -256,6 +307,44 @@ namespace OnlineCampus.Tests.Controller.Tests
             Assert.NotNull(result);
             Assert.Equal(viewModel, result.Model);
             Assert.Contains(controller.ModelState[string.Empty].Errors, e => e.ErrorMessage.Contains("Data has not been modified"));
+        }
+
+        [Fact]
+        public async Task Edit_DbUpdateException_SetsViewBagMessage()
+        {
+            // Arrange
+            var studentId = Guid.NewGuid();
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentDetailViewModel { StudentId = studentId };
+            mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ThrowsAsync(new DbUpdateException());
+
+            // Act
+            var result = await controller.Edit(viewModel) as ViewResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("An error occurred while editing data in the database.", controller.ViewBag.Message); ;
+        }
+
+        [Fact]
+        public async Task Edit_SuccessfulUpdate_RedirectsToIndex()
+        {
+            // Arrange
+            var studentId = Guid.NewGuid();
+            var controller = new StudentController(mockStudentRepository.Object);
+            var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
+            var student = new Student { StudentId = studentId, FirstName = "Johnny", LastName = "Doe" };
+            mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync(student);
+            mockStudentRepository.Setup(repo => repo.UpdateStudent(student)).Verifiable();
+
+            // Act
+            var result = await controller.Edit(viewModel) as RedirectToActionResult;
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("Index", result.ActionName);
+            mockStudentRepository.Verify(repo => repo.UpdateStudent(student), Times.Once);
+            mockStudentRepository.Verify(repo => repo.Save(), Times.Once);
         }
 
         [Fact]
