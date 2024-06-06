@@ -32,3 +32,23 @@ jobs:
       with:
         name: .net-app
         path: ${{env.DOTNET_ROOT}}\myotherapp
+
+  test:
+    runs-on: windows-latest
+    needs: build
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.x'
+          include-prerelease: true
+
+      - name: Restore dependencies
+        run: dotnet restore OnlineCampus/OnlineCampus.sln
+
+      - name: Run tests
+        run: dotnet test OnlineCampus/OnlineCampus.Tests/OnlineCampus.Tests.csproj --configuration Release
