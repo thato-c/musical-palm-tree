@@ -1,0 +1,28 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    branches: [ "ApplicationSetup" ]
+  pull_request:
+    branches: [ "ApplicationSetup" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Restore dependencies
+      run: dotnet restore OnlineCampus/OnlineCampus.sln
+      
+    - name: Build
+      run: dotnet build OnlineCampus/OnlineCampus/OnlineCampus.csproj --no-restore
