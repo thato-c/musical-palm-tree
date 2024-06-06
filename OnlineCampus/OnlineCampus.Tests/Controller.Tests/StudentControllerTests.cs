@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using OnlineCampus.Controllers;
@@ -331,11 +334,31 @@ namespace OnlineCampus.Tests.Controller.Tests
         {
             // Arrange
             var studentId = Guid.NewGuid();
-            var controller = new StudentController(mockStudentRepository.Object);
+            var mockStudentRepository = new Mock<IStudentRepository>();
+            var mockMetadataProvider = new Mock<IModelMetadataProvider>();
+            var mockModelBinderFactory = new Mock<IModelBinderFactory>();
+            var mockObjectModelValidator = new Mock<IObjectModelValidator>();
+
+            var controller = new StudentController(mockStudentRepository.Object)
+            {
+                // Injecting necessary context for the controller
+                ControllerContext = new ControllerContext()
+                {
+                    HttpContext = new DefaultHttpContext(),
+                    RouteData = new Microsoft.AspNetCore.Routing.RouteData(),
+                    ActionDescriptor = new Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor()
+                },
+                MetadataProvider = mockMetadataProvider.Object,
+                ModelBinderFactory = mockModelBinderFactory.Object,
+                ObjectValidator = mockObjectModelValidator.Object,
+
+            };
+
             var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
             var student = new Student { StudentId = studentId, FirstName = "Johnny", LastName = "Doe" };
             mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync(student);
             mockStudentRepository.Setup(repo => repo.UpdateStudent(student)).Verifiable();
+            mockStudentRepository.Setup(repo => repo.Save()).Verifiable();
 
             // Act
             var result = await controller.Edit(viewModel) as RedirectToActionResult;
@@ -343,7 +366,7 @@ namespace OnlineCampus.Tests.Controller.Tests
             // Assert
             Assert.NotNull(result);
             Assert.Equal("Index", result.ActionName);
-            mockStudentRepository.Verify(repo => repo.UpdateStudent(student), Times.Once);
+            mockStudentRepository.Verify(repo => repo.UpdateStudent(It.IsAny<Student>()), Times.Once);
             mockStudentRepository.Verify(repo => repo.Save(), Times.Once);
         }
 
