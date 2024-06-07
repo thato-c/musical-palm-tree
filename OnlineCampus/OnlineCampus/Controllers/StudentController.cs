@@ -304,17 +304,32 @@ namespace OnlineCampus.Controllers
                 {
                     var studentToDelete = await studentRepository.GetStudentByIdAsync(viewModel.StudentId);
 
-                    if (studentToDelete != null)
+                    if (studentToDelete == null)
+                    {
+                        ViewBag.Message = "Student was not found.";
+                        return View();
+                    }
+
+                    try
                     {
                         await studentRepository.DeleteStudent(viewModel.StudentId);
                         await studentRepository.SaveAsync();
 
                         return RedirectToAction("Index");
                     }
-                    else 
+                    catch(DbUpdateConcurrencyException ex)
                     {
-                        ViewBag.Message = "Student was not found.";
-                        return View();
+                        var ExceptionEntry = ex.Entries.Single();
+                        var databaseEntry = ExceptionEntry.GetDatabaseValues();
+                        if (databaseEntry == null)
+                        {
+                            ModelState.AddModelError(string.Empty, "Unable to save the changes. The student has been deleted by another user.");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Concurrency error occurred.");
+                        }
+                        return View(viewModel);
                     }
                 }
                 else
