@@ -10,10 +10,12 @@ namespace OnlineCampus.Controllers
 {
     public class StudentController : Controller
     {
+        private readonly ILogger<StudentController> _logger;
         private IStudentRepository studentRepository;
 
-        public StudentController(IStudentRepository studentRepository)
+        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository)
         {
+            _logger = logger;
             this.studentRepository = studentRepository;
         }
 
@@ -101,14 +103,19 @@ namespace OnlineCampus.Controllers
             catch (DbUpdateException ex)
             {
                 // Log the exception details
-                Console.WriteLine($"DbUpdateException: {ex.Message}");
-                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+                _logger.LogError(ex, "An error occurred while inserting data into the database.");
 
                 // Optionally, log additional details
-                // Log the SQL statement causing the exception
-                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
-                ModelState.AddModelError("", "An error occurred while inserting data into the database.");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException.InnerException.Message);
+                }
 
+                ModelState.AddModelError("", "An error occurred while inserting data into the database.");
                 ViewBag.Message = "An error occurred while inserting data into the database.";
                 return View();
             }
@@ -140,14 +147,19 @@ namespace OnlineCampus.Controllers
             catch (DbUpdateException ex)
             {
                 // Log the exception details
-                Console.WriteLine($"DbUpdateException: {ex.Message}");
-                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+                _logger.LogError(ex, "An error occurred while retrieving data from the database.");
 
                 // Optionally, log additional details
-                // Log the SQL statement causing the exception
-                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
-                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException.InnerException.Message);
+                }
 
+                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
                 ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
             }
@@ -241,14 +253,19 @@ namespace OnlineCampus.Controllers
             catch (DbUpdateException ex)
             {
                 // Log the exception details
-                Console.WriteLine($"DbUpdateException: {ex.Message}");
-                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+                _logger.LogError(ex, "An error occurred while editing data in the database.");
 
                 // Optionally, log additional details
-                // Log the SQL statement causing the exception
-                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
-                ModelState.AddModelError("", "An error occurred while editing data in the database.");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException.InnerException.Message);
+                }
 
+                ModelState.AddModelError("", "An error occurred while editing data in the database.");
                 ViewBag.Message = "An error occurred while editing data in the database.";
                 return View();
             }
@@ -280,14 +297,19 @@ namespace OnlineCampus.Controllers
             catch (DbUpdateException ex)
             {
                 // Log the exception details
-                Console.WriteLine($"DbUpdateException: {ex.Message}");
-                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+                _logger.LogError(ex, "An error occurred while retrieving data from the database.");
 
                 // Optionally, log additional details
-                // Log the SQL statement causing the exception
-                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
-                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException.InnerException.Message);
+                }
 
+                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
                 ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
             }
@@ -340,14 +362,19 @@ namespace OnlineCampus.Controllers
             catch (DbUpdateException ex)
             {
                 // Log the exception details
-                Console.WriteLine($"DbUpdateException: {ex.Message}");
-                Console.WriteLine($"Inner Exception: {ex.InnerException?.Message}");
+                _logger.LogError(ex, "An error occurred while removing data from the database.");
 
                 // Optionally, log additional details
-                // Log the SQL statement causing the exception
-                Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
-                ModelState.AddModelError("", "An error occurred while removing data from the database.");
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException.InnerException.Message);
+                }
 
+                ModelState.AddModelError("", "An error occurred while removing data from the database.");
                 ViewBag.Message = "An error occurred while removing data from the database.";
                 return View();
             }

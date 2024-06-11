@@ -1,8 +1,10 @@
+using Castle.Core.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Moq;
 using OnlineCampus.Controllers;
 using OnlineCampus.Interfaces;
@@ -13,13 +15,15 @@ namespace OnlineCampus.Tests.Controller.Tests
 {
     public class StudentControllerTests
     {
-        private Mock<IStudentRepository> mockStudentRepository;
+        private readonly Mock<IStudentRepository> mockStudentRepository;
+        private readonly Mock<ILogger<StudentController>> mockLogger;
         private StudentController controller;
 
         public StudentControllerTests()
         {
             mockStudentRepository = new Mock<IStudentRepository>();
-            controller = new StudentController(mockStudentRepository.Object);
+            mockLogger = new Mock<ILogger<StudentController>>();
+            controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
         }
 
         //[Fact]
@@ -109,7 +113,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         {
             // Arrange
             var mockRepo = new Mock<IStudentRepository>();
-            var controller = new StudentController(mockRepo.Object);
+            var controller = new StudentController(mockLogger.Object, mockRepo.Object);
 
             // Act
             var result = controller.Create();
@@ -123,7 +127,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         public void Create_ModelStateInvalid_ReturnsViewWithViewModel()
         {
             // Arrange
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             controller.ModelState.AddModelError("Error", "Model state is invalid");
             var viewModel = new StudentViewModel();
 
@@ -139,7 +143,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         public void Create_SuccessfulCreation_RedirectsToToken()
         {
             // Arrange
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             var viewModel = new StudentViewModel { FirstName = "John", LastName = "Doe" };
 
             // Act
@@ -156,7 +160,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         public void Create_DbUpdateException_SetsViewBagMessage()
         {
             // Arrange
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             var viewModel = new StudentViewModel { FirstName = "John", LastName = "Doe" };
             mockStudentRepository.Setup(repo => repo.InsertStudent(It.IsAny<Student>()))
                 .Throws(new DbUpdateException("Test exception", new Exception("Inner exception")));
@@ -178,7 +182,7 @@ namespace OnlineCampus.Tests.Controller.Tests
             var mockRepository = new Mock<IStudentRepository>();
             mockRepository.Setup(repo => repo.GetStudentByIdAsync(studentId))
                 .ReturnsAsync((Student)null);
-            var controller = new StudentController(mockRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockRepository.Object);
 
             // Act
             var result = await controller.Edit(studentId);
@@ -204,7 +208,7 @@ namespace OnlineCampus.Tests.Controller.Tests
             };
             mockRepository.Setup(repo => repo.GetStudentByIdAsync(studentId))
                 .ReturnsAsync(student);
-            var controller = new StudentController(mockRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockRepository.Object);
 
             // Act
             var result = await controller.Edit(studentId);
@@ -226,7 +230,7 @@ namespace OnlineCampus.Tests.Controller.Tests
             var mockRepository = new Mock<IStudentRepository>();
             mockRepository.Setup(repo => repo.GetStudentByIdAsync(studentId))
                 .ThrowsAsync(new DbUpdateException("Test exception", new Exception("Inner exception")));
-            var controller = new StudentController(mockRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockRepository.Object);
 
             // Act
             var result = await controller.Edit(studentId);
@@ -242,7 +246,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         public async Task Edit_ModelStateInvalid_ReturnsViewWithViewModel()
         {
             // Arrange 
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             controller.ModelState.AddModelError("Error", "Model state is invalid");
             var viewModel = new StudentDetailViewModel();
 
@@ -259,7 +263,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         {
             // Arrange
             var studentId = Guid.NewGuid();
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             var viewModel = new StudentDetailViewModel { StudentId = studentId };
             mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId))
                 .ReturnsAsync((Student)null);
@@ -277,7 +281,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         {
             // Arrnage
             var studentId = Guid.NewGuid();
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
             var student = new Student { StudentId = studentId, FirstName = "John", LastName = "Doe" };
             mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync(student);
@@ -297,7 +301,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         {
             // Arrange
             var studentId = Guid.NewGuid();
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
             var student = new Student { StudentId = studentId, FirstName = "John", LastName = "Doe", RowVersion = viewModel.RowVersion };
             mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync((Student)student);
@@ -317,7 +321,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         {
             // Arrange
             var studentId = Guid.NewGuid();
-            var controller = new StudentController(mockStudentRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object);
             var viewModel = new StudentDetailViewModel { StudentId = studentId };
             mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ThrowsAsync(new DbUpdateException());
 
@@ -384,7 +388,7 @@ namespace OnlineCampus.Tests.Controller.Tests
             };
             mockRepository.Setup(repo => repo.GetStudentByIdAsync(studentId))
                 .ReturnsAsync(student);
-            var controller = new StudentController(mockRepository.Object);
+            var controller = new StudentController(mockLogger.Object, mockRepository.Object);
 
             // Act
             var result = await controller.Delete(studentId);
