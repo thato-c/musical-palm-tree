@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
+using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
@@ -69,6 +70,56 @@ namespace OnlineCampus.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(CourseViewModel viewModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    // Map the ViewModel to the Course MModel
+                    var course = new Models.Course
+                    {
+                        Code = viewModel.Code,
+                        Name = viewModel.Name,
+                        Description = viewModel.Description,
+                        Credits = viewModel.Credits,
+                    };
+
+                    // Add and save the nre course to the database
+                    courseRepository.InsertCourse(course);
+                    courseRepository.Save();
+                    return RedirectToAction("Index");
+                }
+                return View(viewModel);
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log thee exception details.
+                _logger.LogError(ex, "AN error occurred while inserting data into the database.");
+
+                // Optionally, log additional details.
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException.InnerException.Message);
+                }
+
+                ModelState.AddModelError("", "An error occurred while inserting data into the database.");
+                ViewBag.Message = "An error occurred while inserting data into the database.";
+                return View();
+            }
+        }
 
     }
 }
