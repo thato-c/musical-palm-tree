@@ -10,6 +10,7 @@ builder.Services.AddDbContext<EnrolmentDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Dev"))
 );
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
 builder.Services.AddControllersWithViews();
 

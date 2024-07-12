@@ -5,52 +5,52 @@ using OnlineCampus.Models;
 
 namespace OnlineCampus.Repositories
 {
-    public class StudentRepository : IStudentRepository, IDisposable
+    public class CourseRepository : ICourseRepository, IDisposable
     {
         private EnrolmentDBContext context;
 
-        public StudentRepository(EnrolmentDBContext context)
+        public CourseRepository(EnrolmentDBContext context)
         {
             this.context = context;
         }
 
-        public IQueryable<Student> GetStudents()
+        public IQueryable<Course> GetCourses()
         {
-            return context.Students.AsQueryable();
+            return context.Courses.AsQueryable();
         }
-        
-        public async Task<Student> GetStudentByIdAsync(Guid studentId)
+
+        public async Task<Course> GetCoursesAsync(Guid courseId)
         {
-            return await context.Students
+            return await context.Courses
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(s => s.StudentId == studentId);
+                        .FirstOrDefaultAsync(c => c.CourseId == courseId);
         }
 
-        public void InsertStudent(Student student)
+        public void InsertCourse(Course course)
         {
-            context.Students.Add(student);
+            context.Courses.Add(course);
         }
 
-        public async Task<Student> DeleteStudent(Guid studentId)
+        public async Task<Course> DeleteCourse(Guid courseId)
         {
-            var student = await context.Students.FindAsync(studentId);
+            var course = await context.Courses.FindAsync(courseId);
 
-            if (student != null)
+            if (course != null)
             {
-                context.Students.Remove(student);
+                context.Courses.Remove(course);
             }
 
             return null;
         }
 
-        public void UpdateStudent(Student student)
+        public void UpdateCourse(Course course)
         {
-            context.Entry(student).State = EntityState.Modified;
+            context.Entry(course).State = EntityState.Modified;
         }
 
-        public void SetOriginalRowVersion(Student student, byte[] rowVersion)
+        public void SetOriginalRowVersion(Course course, byte[] rowVersion)
         {
-            context.Entry(student).Property("RowVersion").OriginalValue = rowVersion;
+            context.Entry(course).Property("RowVersion").OriginalValue = rowVersion;
         }
 
         public void Save()
