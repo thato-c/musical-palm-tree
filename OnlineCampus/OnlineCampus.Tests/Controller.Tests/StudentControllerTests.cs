@@ -1,11 +1,8 @@
-using Castle.Core.Logging;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Moq.EntityFrameworkCore;
 using OnlineCampus.Controllers;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
@@ -36,7 +33,7 @@ namespace OnlineCampus.Tests.Controller.Tests
         //        new Student {FirstName = "Jane", LastName = "Doe"}
         //    }.AsQueryable();
 
-        //    mockStudentRepository.Setup(repo => repo.GetStudents()).Returns(students);
+        //    mockStudentRepository.Setup(repo => repo.GetStudents()).Returns(students.AsAsyncQueryable());
 
         //    // Act
         //    var result = await controller.Index("name_desc", null, null, 1) as ViewResult;
@@ -342,8 +339,11 @@ namespace OnlineCampus.Tests.Controller.Tests
         //    var mockMetadataProvider = new Mock<IModelMetadataProvider>();
         //    var mockModelBinderFactory = new Mock<IModelBinderFactory>();
         //    var mockObjectModelValidator = new Mock<IObjectModelValidator>();
+        //    var mockTempData = new Mock<ITempDataDictionary>();
+        //    var mockProblemDetailsFactory = new Mock<ProblemDetailsFactory>();
+        //    var mockUrlHelper = new Mock<IUrlHelper>();
 
-        //    var controller = new StudentController(mockStudentRepository.Object)
+        //    var controller = new StudentController(mockLogger.Object, mockStudentRepository.Object)
         //    {
         //        // Injecting necessary context for the controller
         //        ControllerContext = new ControllerContext()
@@ -355,14 +355,23 @@ namespace OnlineCampus.Tests.Controller.Tests
         //        MetadataProvider = mockMetadataProvider.Object,
         //        ModelBinderFactory = mockModelBinderFactory.Object,
         //        ObjectValidator = mockObjectModelValidator.Object,
-
+        //        TempData = mockTempData.Object,
+        //        ProblemDetailsFactory = mockProblemDetailsFactory.Object,
+        //        Url = mockUrlHelper.Object,
         //    };
 
-        //    var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe" };
-        //    var student = new Student { StudentId = studentId, FirstName = "Johnny", LastName = "Doe" };
+        //    var viewModel = new StudentDetailViewModel { StudentId = studentId, FirstName = "John", LastName = "Doe", RowVersion = new byte[] { 1, 2, 3, 4 }};
+        //    var student = new Student { StudentId = studentId, FirstName = "Johnny", LastName = "Doe", RowVersion = new byte[] { 1, 2, 3, 4 }};
         //    mockStudentRepository.Setup(repo => repo.GetStudentByIdAsync(studentId)).ReturnsAsync(student);
         //    mockStudentRepository.Setup(repo => repo.UpdateStudent(student)).Verifiable();
         //    mockStudentRepository.Setup(repo => repo.Save()).Verifiable();
+
+        //    // Ensure HttpContext has necessary services
+        //    controller.ControllerContext.HttpContext.RequestServices = new ServiceCollection()
+        //        .AddSingleton(mockMetadataProvider.Object)
+        //        .AddSingleton(mockModelBinderFactory.Object)
+        //        .AddSingleton(mockObjectModelValidator.Object)
+        //        .BuildServiceProvider();
 
         //    // Act
         //    var result = await controller.Edit(viewModel) as RedirectToActionResult;
