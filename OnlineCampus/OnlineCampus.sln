@@ -5,8 +5,6 @@ VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineCampus", "OnlineCampus\OnlineCampus.csproj", "{0A9A8E07-EC3D-4176-90ED-7C23CA1E7BCB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineCampus.Tests", "OnlineCampus.Tests\OnlineCampus.Tests.csproj", "{07B376DF-91FE-414C-B50F-B853B1BEA992}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

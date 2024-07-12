@@ -1,0 +1,23 @@
+﻿@using OnlineCampus.ViewModels
+@model StudentViewModel
+
+<h1>Add a Student</h1>
+
+<form asp-controller="Student" asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="FirstName">First Name</label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName">Last Name</label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+
+    <button type="submit">Add Student</button>
+</form>
