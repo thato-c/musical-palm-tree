@@ -51,7 +51,7 @@
                         @course.Credits
                     </td>
                     <td>
-                        <a asp-route-CourseId="@course.CourseId">Edit</a>
+                        <a asp-controller="Course" asp-action="Edit" asp-route-CourseId="@course.CourseId">Edit</a>
                     </td>
                     <td>
                         <a asp-route-CourseId="@course.CourseId">Delete</a>
