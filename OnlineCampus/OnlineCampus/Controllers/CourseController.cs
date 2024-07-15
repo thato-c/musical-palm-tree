@@ -327,5 +327,65 @@ namespace OnlineCampus.Controllers
             }
         }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(CourseDetailViewModel viewModel)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var courseToDelete = await courseRepository.GetCourseByIdAsync(viewModel.CourseId);
+
+                    if (courseToDelete == null)
+                    {
+                        ViewBag.Message = "Course was not found.";
+                        return View();
+                    }
+
+                    try
+                    {
+                        await courseRepository.DeleteCourse(viewModel.CourseId);
+                        await courseRepository.SaveAsync();
+                        return RedirectToAction("Index");
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        var ExceptionEntry = ex.Entries.Single();
+                        var databaseEntry = ExceptionEntry.GetDatabaseValues();
+                        if (databaseEntry == null)
+                        {
+                            ModelState.AddModelError(string.Empty, "Unable to save the changes. The course has been deleted by aniother user.");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError(string.Empty, "Concurrency error occurred.");
+                        }
+                        return View(viewModel);
+                    }
+                }
+                return View(viewModel);
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the exception details
+                _logger.LogError(ex, "An error occurred while removing data from the database.");
+
+                // Optionally, log additional details
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException?.InnerException.Message);
+                }
+
+                ModelState.AddModelError("", "An error occurred while removing data from the database.");
+                ViewBag.Message = "An error occurred while removing data from the database.";
+                return View();
+            }
+        }
     }
 }
