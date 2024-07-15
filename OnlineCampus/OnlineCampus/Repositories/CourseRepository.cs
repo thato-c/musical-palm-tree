@@ -19,7 +19,7 @@ namespace OnlineCampus.Repositories
             return context.Courses.AsQueryable();
         }
 
-        public async Task<Course> GetCoursesAsync(Guid courseId)
+        public async Task<Course> GetCourseByIdAsync(Guid courseId)
         {
             return await context.Courses
                         .AsNoTracking()
