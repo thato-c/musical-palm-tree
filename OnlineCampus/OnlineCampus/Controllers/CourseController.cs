@@ -280,5 +280,52 @@ namespace OnlineCampus.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid CourseId)
+        {
+            try
+            {
+                var course = await courseRepository.GetCourseByIdAsync(CourseId);
+
+                if (course == null)
+                {
+                    ViewBag.Message = "The Course has not been found.";
+                    return View();
+                }
+
+                var viewModel = new CourseDetailViewModel
+                {
+                    CourseId = course.CourseId,
+                    Name = course.Name,
+                    Description = course.Description,
+                    Code = course.Code,
+                    Credits = course.Credits,
+                    RowVersion = course.RowVersion,
+                };
+
+                return View(viewModel);
+            }
+            catch (DbUpdateException ex)
+            {
+                // Log the exception details
+                _logger.LogError(ex, "An error occurred while retrieving data from the database.");
+
+                // Optionally, log additional details
+                if (ex.InnerException != null)
+                {
+                    _logger.LogError("Inner Exception: {Message}", ex.InnerException.Message);
+                }
+                if (ex.InnerException?.InnerException != null)
+                {
+                    _logger.LogError("SQL: {Message}", ex.InnerException?.InnerException.Message);
+                }
+
+                ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
+                ViewBag.Message = "An error occurred while retrieving data from the database.";
+                return View();
+            }
+        }
+
     }
 }
