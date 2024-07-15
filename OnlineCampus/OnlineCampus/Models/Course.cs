@@ -1,4 +1,6 @@
-﻿namespace OnlineCampus.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OnlineCampus.Models
 {
     public class Course
     {
@@ -11,6 +13,9 @@
         public string Description { get; set; } = string.Empty;
 
         public int Credits { get; set; } = 0;
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
     }
