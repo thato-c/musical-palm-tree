@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 using OnlineCampus.Repositories;
+using OnlineCampus.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<EnrolmentDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Dev"))
 );
+
+builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "no-reply@OnlineCampus.com"));
 
 builder.Services.AddDefaultIdentity<User>(options =>
 {
