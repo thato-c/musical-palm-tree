@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Models;
 
 namespace OnlineCampus.Data
 {
-    public class EnrolmentDBContext:DbContext
+    public class EnrolmentDBContext:IdentityDbContext<User>
     {
         public EnrolmentDBContext(DbContextOptions<EnrolmentDBContext> options) : base(options)
         { 
@@ -15,6 +16,8 @@ namespace OnlineCampus.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Student>().ToTable("Student");
             modelBuilder.Entity<Course>().ToTable("Course");
             modelBuilder.Entity<Enrolment>().ToTable("Enrolment");

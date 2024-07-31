@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
 using OnlineCampus.Interfaces;
+using OnlineCampus.Models;
 using OnlineCampus.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<EnrolmentDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Dev"))
 );
+
+builder.Services.AddDefaultIdentity<User>(options =>
+{
+    options.Password.RequireDigit = true;
+    options.Password.RequiredLength = 7;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.SignIn.RequireConfirmedAccount = true;
+}).AddEntityFrameworkStores<EnrolmentDBContext>();
+
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 

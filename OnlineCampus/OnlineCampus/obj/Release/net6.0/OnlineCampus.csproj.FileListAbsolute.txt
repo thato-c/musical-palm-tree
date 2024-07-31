@@ -90,3 +90,11 @@ C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\xunit.assert.dll
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\xunit.core.dll
 C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\xunit.execution.dotnet.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.AspNetCore.Identity.UI.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.Extensions.FileProviders.Embedded.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.Extensions.Identity.Core.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\bin\Release\net6.0\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\obj\Release\net6.0\OnlineCampus.MvcApplicationPartsAssemblyInfo.cs
