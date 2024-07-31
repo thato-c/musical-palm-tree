@@ -1,22 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OnlineCampus.Models
+namespace OnlineCampus.ViewModels
 {
-    public class Course
+    public class CourseDetailViewModel
     {
         public Guid CourseId { get; set; }
 
+        [Required(ErrorMessage = "Course code is required.")]
         public string Code { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Course Name is required.")]
         public string Name { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Course Description is required.")]
         public string Description { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Course Credits are required.")]
         public int Credits { get; set; } = 0;
 
         [Timestamp]
         public byte[] RowVersion { get; set; }
-
-        public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
     }
 }

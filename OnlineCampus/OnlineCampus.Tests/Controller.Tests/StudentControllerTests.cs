@@ -327,7 +327,7 @@ namespace OnlineCampus.Tests.Controller.Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("An error occurred while editing data in the database.", controller.ViewBag.Message); ;
+            Assert.Equal("An error occurred while editing data in the database.", controller.ViewBag.Message);
         }
 
         //[Fact]

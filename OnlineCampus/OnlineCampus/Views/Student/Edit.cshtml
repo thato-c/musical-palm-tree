@@ -3,7 +3,7 @@
 
 <h1>Edit Student</h1>
 
-<form asp-asp-controller="Student" asp-action="Edit" method="post">
+<form asp-controller="Student" asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="text-danger"></div>
     <input type="hidden" asp-for="StudentId" />

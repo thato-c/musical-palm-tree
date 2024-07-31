@@ -1,4 +1,6 @@
-﻿namespace OnlineCampus.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace OnlineCampus.Models
 {
     public class Enrolment
     {
@@ -7,6 +9,9 @@
         public Guid StudentId { get; set; }
 
         public Guid CourseId { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public Student Student { get; set; } = new Student();
 
