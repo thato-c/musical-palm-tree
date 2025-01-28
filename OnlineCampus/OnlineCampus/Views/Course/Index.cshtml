@@ -31,7 +31,6 @@
                 Credits
             </th>
             <th></th>
-            <th></th>
         </tr>
         @foreach (var course in Model)
         {
@@ -51,11 +50,14 @@
                         @course.Credits
                     </td>
                     <td>
+                        <a asp-controller="" asp-action="" asp-route-CourseId="@course.CourseId">Enroll</a>
+                    </td>
+                    @* <td>
                         <a asp-controller="Course" asp-action="Edit" asp-route-CourseId="@course.CourseId">Edit</a>
                     </td>
                     <td>
                         <a asp-controller="Course" asp-action="Delete" asp-route-CourseId="@course.CourseId">Delete</a>
-                    </td>
+                    </td> *@
                 </tr>
             }
         }
