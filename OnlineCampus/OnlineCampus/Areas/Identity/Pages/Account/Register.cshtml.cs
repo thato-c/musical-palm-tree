@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 
 namespace OnlineCampus.Areas.Identity.Pages.Account
@@ -30,13 +31,15 @@ namespace OnlineCampus.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IStudentRepository _studentRepository;
 
         public RegisterModel(
             UserManager<User> userManager,
             IUserStore<User> userStore,
             SignInManager<User> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IStudentRepository studentRepository)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +47,7 @@ namespace OnlineCampus.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _studentRepository = studentRepository;
         }
 
         /// <summary>
@@ -137,6 +141,17 @@ namespace OnlineCampus.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+
+                    var student = new Student
+                    {
+                        StudentId = Guid.NewGuid(),
+                        FirstName = Input.FirstName,
+                        LastName = Input.LastName,
+                        UserId = user.Id,
+                    };
+
+                    _studentRepository.InsertStudent(student);
+                    await _studentRepository.SaveAsync();                    
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

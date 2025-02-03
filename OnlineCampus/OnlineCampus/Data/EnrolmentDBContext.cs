@@ -22,6 +22,13 @@ namespace OnlineCampus.Data
             modelBuilder.Entity<Course>().ToTable("Course");
             modelBuilder.Entity<Enrolment>().ToTable("Enrolment");
 
+            // One-to-One Relationship
+            modelBuilder.Entity<Student>()
+                .HasOne(s => s.User)
+                .WithOne(u => u.Student)
+                .HasForeignKey<Student>(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             // Configure the relationship between Student and Enrolment
             modelBuilder.Entity<Student>()
                 .HasMany(student => student.Enrolments)

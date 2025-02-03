@@ -17,10 +17,10 @@ namespace OnlineCampus.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.13")
+                .HasAnnotation("ProductVersion", "6.0.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -55,7 +55,7 @@ namespace OnlineCampus.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -80,7 +80,7 @@ namespace OnlineCampus.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -238,7 +238,14 @@ namespace OnlineCampus.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("StudentId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Student", (string)null);
                 });
@@ -389,6 +396,17 @@ namespace OnlineCampus.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("OnlineCampus.Models.Student", b =>
+                {
+                    b.HasOne("OnlineCampus.Models.User", "User")
+                        .WithOne("Student")
+                        .HasForeignKey("OnlineCampus.Models.Student", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("OnlineCampus.Models.Course", b =>
                 {
                     b.Navigation("Enrolments");
@@ -397,6 +415,11 @@ namespace OnlineCampus.Migrations
             modelBuilder.Entity("OnlineCampus.Models.Student", b =>
                 {
                     b.Navigation("Enrolments");
+                });
+
+            modelBuilder.Entity("OnlineCampus.Models.User", b =>
+                {
+                    b.Navigation("Student");
                 });
 #pragma warning restore 612, 618
         }
