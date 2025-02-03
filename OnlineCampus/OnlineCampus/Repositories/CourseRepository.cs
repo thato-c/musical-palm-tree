@@ -2,6 +2,7 @@
 using OnlineCampus.Data;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
+using SQLitePCL;
 
 namespace OnlineCampus.Repositories
 {
@@ -24,6 +25,14 @@ namespace OnlineCampus.Repositories
             return await context.Courses
                         .AsNoTracking()
                         .FirstOrDefaultAsync(c => c.CourseId == courseId);
+        }
+
+        public async Task<Guid?> GetCourseIdAsync(Guid courseId)
+        {
+            return await context.Courses
+                .Where(c => c.CourseId == courseId)
+                .Select(c => c.CourseId)
+                .FirstOrDefaultAsync();
         }
 
         public void InsertCourse(Course course)

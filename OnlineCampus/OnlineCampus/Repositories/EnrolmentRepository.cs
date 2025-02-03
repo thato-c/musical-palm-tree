@@ -46,7 +46,7 @@ namespace OnlineCampus.Repositories
         {
             _context.Entry(enrolment).State = EntityState.Modified;
         }
-
+        
         public void SetOriginalRowVersion(Enrolment enrolment, byte[] rowVersion)
         {
             _context.Entry(enrolment).Property("RowVersion").OriginalValue = rowVersion;

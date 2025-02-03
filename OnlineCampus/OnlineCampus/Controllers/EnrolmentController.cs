@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineCampus.Interfaces;
 using System.Security.Claims;
+using OnlineCampus.ViewModels;
+
 
 namespace OnlineCampus.Controllers
 {
@@ -26,17 +28,14 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> EnrollStudent(Guid CourseId)
         {
-            var course = await _courseRepository.GetCourseByIdAsync(CourseId);
-            if (course == null)
+            var courseId = await _courseRepository.GetCourseIdAsync(CourseId);
+            if (courseId == null)
             {
                 ViewBag.Message = "The course has not been found";
                 return View("Course", "Index");
             }
 
-            var courseId = course.CourseId;
-
-            // Create a User repository
-            var studentIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var studentIdString = "a945e7bb-3faa-445d-9866-08dd443d4dc1";
             if (studentIdString == null)
             {
                 // Redirect to working Login page
@@ -51,15 +50,16 @@ namespace OnlineCampus.Controllers
             // Correct naming issues.
             var enrollment = new Models.Enrolment
             {
-                CourseId = courseId,
+                CourseId = (Guid)courseId.Value,
                 StudentId = studentId,
             };
 
             _enrolmentRepository.InsertEnrolment(enrollment);
+
             _enrolmentRepository.Save();
 
             // Correct the redirection, causes an error.
-            return View("Index", "Course");
+            return RedirectToAction("Index", "Course");
         }
     }
 

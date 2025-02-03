@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineCampus.Models
 {
@@ -13,8 +14,10 @@ namespace OnlineCampus.Models
         [Timestamp]
         public byte[] RowVersion { get; set; }
 
-        public Student Student { get; set; } = new Student();
+        [ForeignKey("StudentId")]
+        public virtual Student Student { get; set; }
 
-        public Course Course { get; set; } = new Course();
+        [ForeignKey("CourseId")]
+        public virtual Course Course { get; set; }
     }
 }
