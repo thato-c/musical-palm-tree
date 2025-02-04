@@ -35,31 +35,43 @@ namespace OnlineCampus.Controllers
                 return View("Course", "Index");
             }
 
-            var studentIdString = "a945e7bb-3faa-445d-9866-08dd443d4dc1";
-            if (studentIdString == null)
+            if (User.Identity.IsAuthenticated)
             {
-                // Redirect to working Login page
-                return View("Login");
+                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!Guid.TryParse(userIdString, out Guid userId))
+                {
+                    return BadRequest("Invalid User Id");
+                }
+
+                var studentIdString = await _studentRepository.GetStudentIdAsync(userId);
+
+                if (studentIdString == null)
+                {
+                    // Redirect to working Login page
+                    return LocalRedirect("~/Identity/Account/Register");
+                }
+
+                Guid studentId = studentIdString.Value;
+
+                // Correct naming issues.
+                var enrollment = new Models.Enrolment
+                {
+                    CourseId = (Guid)courseId.Value,
+                    StudentId = studentId,
+                };
+
+                _enrolmentRepository.InsertEnrolment(enrollment);
+
+                _enrolmentRepository.Save();
+
+                // Correct the redirection, causes an error.
+                return RedirectToAction("Index", "Course");
             }
 
-            if (!Guid.TryParse(studentIdString, out Guid studentId))
-            {
-                return BadRequest("Invalid User ID");
-            }
 
-            // Correct naming issues.
-            var enrollment = new Models.Enrolment
-            {
-                CourseId = (Guid)courseId.Value,
-                StudentId = studentId,
-            };
+            return LocalRedirect("~/Identity/Account/Register");
 
-            _enrolmentRepository.InsertEnrolment(enrollment);
-
-            _enrolmentRepository.Save();
-
-            // Correct the redirection, causes an error.
-            return RedirectToAction("Index", "Course");
+            
         }
     }
 

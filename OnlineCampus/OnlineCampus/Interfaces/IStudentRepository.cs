@@ -5,6 +5,7 @@ namespace OnlineCampus.Interfaces
     public interface IStudentRepository:IDisposable
     {
         IQueryable<Student> GetStudents();
+        Task<Guid?> GetStudentIdAsync(Guid userId);
         Task<Student> GetStudentByIdAsync(Guid studentId);
         void InsertStudent(Student student);
         Task<Student> DeleteStudent(Guid studentId);
