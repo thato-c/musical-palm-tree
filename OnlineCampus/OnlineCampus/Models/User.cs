@@ -11,5 +11,6 @@ namespace OnlineCampus.Models
         public string LastName { get; set; }
 
         public Student? Student { get; set; }
+        public Admin? Admin { get; set; }
     }
 }
