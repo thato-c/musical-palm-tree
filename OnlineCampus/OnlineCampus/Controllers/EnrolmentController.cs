@@ -68,10 +68,8 @@ namespace OnlineCampus.Controllers
                 return RedirectToAction("Index", "Course");
             }
 
-
             return LocalRedirect("~/Identity/Account/Register");
-
-            
+                       
         }
     }
 
