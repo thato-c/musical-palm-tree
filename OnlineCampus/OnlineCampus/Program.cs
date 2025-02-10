@@ -32,6 +32,7 @@ builder.Services.AddDefaultIdentity<User>(options =>
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
