@@ -33,6 +33,7 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAuthRepository,  AuthRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

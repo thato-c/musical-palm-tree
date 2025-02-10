@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
+using OnlineCampus.Repositories;
+using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
@@ -8,11 +10,13 @@ namespace OnlineCampus.Controllers
     {
         private readonly ILogger<AdminController> _logger;
         private IAdminRepository _adminRepository;
+        private IAuthRepository _authRepository;
 
-        public AdminController(ILogger<AdminController> logger, IAdminRepository adminRepository)
+        public AdminController(ILogger<AdminController> logger, IAdminRepository adminRepository, IAuthRepository authrepository)
         {
             _logger = logger;
             _adminRepository = adminRepository;
+            _authRepository = authrepository;
         }
 
         [HttpGet]
@@ -54,6 +58,51 @@ namespace OnlineCampus.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(AdminViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+
+                var user = new User
+                {
+                    FirstName = viewModel.FirstName,
+                    LastName = viewModel.LastName,
+                    Email = viewModel.Email,
+                    UserName = viewModel.UserName,
+                };
+
+                var result = await _authRepository.RegisterUserAsync(user, viewModel.Password);
+
+                if (result.Succeeded)
+                {
+                    // Map the ViewModel to the Admin Model
+                    var Admin = new Models.Admin
+                    {
+                        FirstName = viewModel.FirstName,
+                        LastName = viewModel.LastName,
+                        UserId = user.Id,
+                    };
+
+                    _adminRepository.InsertAdmin(Admin);
+                    await _adminRepository.SaveAsync();
+
+                    await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));
+
+                    return View("Index");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                return View(viewModel);
+            }
+            return View(viewModel);
         }
     }
 }
