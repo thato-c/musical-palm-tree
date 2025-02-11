@@ -187,55 +187,21 @@ namespace OnlineCampus.Controllers
                         {
                             studentRepository.SetOriginalRowVersion(studentToEdit, viewModel.RowVersion);
 
-                            if (await TryUpdateModelAsync<Student>(
-                                studentToEdit,
-                                "",
-                                s => s.FirstName, s => s.LastName))
+                            studentToEdit.FirstName = viewModel.FirstName;
+                            studentToEdit.LastName = viewModel.LastName;
+
+                            try
                             {
-                                try
-                                {
-                                    studentRepository.UpdateStudent(studentToEdit);
-                                    studentRepository.Save();
-                                }
-                                catch (DbUpdateConcurrencyException ex)
-                                {
-                                    var exceptionEntry = ex.Entries.Single();
-                                    var databaseEntry = exceptionEntry.GetDatabaseValues();
-                                    if (databaseEntry == null)
-                                    {
-                                        ModelState.AddModelError(string.Empty, "Unable to save changes. The student was deleted by another user.");
-                                        return View(viewModel);
-                                    }
-                                    else
-                                    {
-                                        var databaseValues = (Student)databaseEntry.ToObject();
-                                        var updatedStudent = new StudentDetailViewModel
-                                        {
-                                            StudentId = databaseValues.StudentId,
-                                            FirstName = databaseValues.FirstName,
-                                            LastName = databaseValues.LastName,
-                                            RowVersion = databaseValues.RowVersion,
-                                        };
-
-                                        if (databaseValues.FirstName != studentToEdit.FirstName)
-                                        {
-                                            ModelState.AddModelError("FirstName", $"Current Value: {databaseValues.FirstName}");
-                                        }
-                                        if (databaseValues.LastName != studentToEdit.LastName)
-                                        {
-                                            ModelState.AddModelError("LastName", $"Current Value: {databaseValues.LastName}");
-                                        }
-
-                                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                            + "was modified by another user after you got the original value. The "
-                                            + "edit operation was canceled and the current values in the database "
-                                            + "have been displayed. If you still want to edit this record, click "
-                                            + "the Save button again. Otherwise click the Back to List hyperlink.");
-
-                                        return View(updatedStudent);
-                                    }
-                                }
+                                studentRepository.UpdateStudent(studentToEdit);
+                                await studentRepository.SaveAsync();
+                                return RedirectToAction("Index");
                             }
+                            catch (DbUpdateConcurrencyException ex)
+                            {
+                                _logger.LogError(ex, "Concurrency error while updating student");
+                                ModelState.AddModelError("", "Concurrency error. Please try again.");
+                            }
+
                             return RedirectToAction("Index");
                         }
                     }
