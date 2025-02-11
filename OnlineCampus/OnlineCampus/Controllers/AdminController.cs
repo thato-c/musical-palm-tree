@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 using OnlineCampus.Repositories;
@@ -125,6 +126,55 @@ namespace OnlineCampus.Controllers
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(AdminDetailViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var adminToEdit = await _adminRepository.GetAdminByIdAsync(viewModel.AdminId);
+
+                if (adminToEdit != null)
+                {
+                    if (adminToEdit.FirstName == viewModel.FirstName && adminToEdit.LastName == viewModel.LastName)
+                    {
+                        ModelState.AddModelError(string.Empty, "Data has not been modified");
+                        return View(viewModel);
+                    }
+                    else
+                    {
+                        _adminRepository.SetOriginalRowVersion(adminToEdit, viewModel.RowVersion);
+
+                        adminToEdit.FirstName = viewModel.FirstName;
+                        adminToEdit.LastName = viewModel.LastName;
+
+                        try
+                        {
+                            _adminRepository.UpdateAdmin(adminToEdit);
+                            await _adminRepository.SaveAsync();
+                            return RedirectToAction("Index");
+                        }
+                        catch (DbUpdateConcurrencyException ex)
+                        {
+                            _logger.LogError(ex, "Concurrency error while updating admin.");
+                            ModelState.AddModelError("", "Concurrency error. Please try again.");
+                        }
+
+                        return RedirectToAction("Index");
+                    }
+                }
+                else
+                {
+                    ViewBag.Message = "Admin was not found";
+                    return View();
+                }
+            }
+            else
+            {
+                return View(viewModel);
+            }
         }
 
         [HttpGet]
