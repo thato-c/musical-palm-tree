@@ -70,5 +70,10 @@ namespace OnlineCampus.Repositories
 
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email", emailBody);
         }
+
+        public async Task AssignRoleAsync(User user, string role)
+        {
+            await _userManager.AddToRoleAsync(user, role);
+        }
     }
 }

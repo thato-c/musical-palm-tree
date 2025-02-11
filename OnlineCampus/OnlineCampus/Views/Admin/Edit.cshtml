@@ -1,12 +1,12 @@
 ﻿@using OnlineCampus.ViewModels
-@model StudentDetailViewModel
+@model AdminDetailViewModel
 
-<h1>Edit Student</h1>
+<h1>Edit Admin</h1>
 
-<form asp-controller="Student" asp-action="Edit" method="post">
+<form asp-conreoller="Admin" asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="text-danger">
-        <input type="hidden" asp-for="StudentId" />
+        <input type="hidden" asp-for="AdminId" />
         <input type="hidden" asp-for="RowVersion" />
     </div>
 
@@ -23,4 +23,5 @@
     </div>
 
     <button type="submit">Edit</button>
+
 </form>

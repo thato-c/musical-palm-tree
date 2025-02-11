@@ -104,5 +104,49 @@ namespace OnlineCampus.Controllers
             }
             return View(viewModel);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid AdminId)
+        {
+            var admin = await _adminRepository.GetAdminByIdAsync(AdminId);
+
+            if (admin == null)
+            {
+                ViewBag.Message = "The Admin has not been found.";
+                return View();
+            }
+
+            var viewModel = new AdminDetailViewModel
+            {
+                AdminId = admin.AdminId,
+                FirstName = admin.FirstName,
+                LastName = admin.LastName,
+                RowVersion = admin.RowVersion,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(Guid AdminId)
+        {
+            var admin = await _adminRepository.GetAdminByIdAsync(AdminId);
+
+            if (admin == null)
+            {
+                ViewBag.Message = "The Admin has not been found.";
+                return View();
+            }
+
+            var viewModel = new AdminDetailViewModel
+            {
+                AdminId = admin.AdminId,
+                FirstName = admin.FirstName,
+                LastName = admin.LastName,
+                RowVersion = admin.RowVersion,
+            };
+
+            return View(viewModel);
+        }
     }
 }

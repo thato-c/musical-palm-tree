@@ -7,5 +7,6 @@ namespace OnlineCampus.Interfaces
     {
         Task<IdentityResult> RegisterUserAsync(User user, string password);
         Task SendConfirmationEmailAsync(User user, string returnUrl);
+        Task AssignRoleAsync(User user, string role);
     }
 }

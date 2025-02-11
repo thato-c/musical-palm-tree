@@ -40,8 +40,12 @@
                     <td>
                         @admin.LastName
                     </td>
-                    <td>Edit</td>
-                    <td>Delete</td>
+                    <td>
+                        <a asp-controller="Admin" asp-action="Edit" asp-route-AdminId="@admin.AdminId">Edit</a>
+                    </td>
+                    <td>
+                        <a asp-controller="Admin" asp-action="Delete" asp-route-AdminId="@admin.AdminId">Delete</a>
+                    </td>
                 </tr>
             }
         }
