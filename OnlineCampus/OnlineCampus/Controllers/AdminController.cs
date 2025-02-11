@@ -198,5 +198,46 @@ namespace OnlineCampus.Controllers
 
             return View(viewModel);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(AdminDetailViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                var adminToDelete = await _adminRepository.GetAdminByIdAsync(viewModel.AdminId);
+
+                if (adminToDelete == null)
+                {
+                    ViewBag.Message = "Admin was not found.";
+                    return View();
+                }
+
+                try
+                {
+                    await _adminRepository.DeleteAdmin(viewModel.AdminId);
+                    await _adminRepository.SaveAsync();
+                    return RedirectToAction("Index");
+                }
+                catch(DbUpdateConcurrencyException ex)
+                {
+                    var ExceptionEntry = ex.Entries.Single();
+                    var databaseEntry = ExceptionEntry.GetDatabaseValues();
+                    if (databaseEntry == null)
+                    {
+                        ModelState.AddModelError(string.Empty, "Unable to save the changes. The admin has been deleted by another user.");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Concurrency error occurred");
+                    }
+                    return View(viewModel);
+                }
+            }
+            else
+            {
+                return View(viewModel);
+            }
+        }
     }
 }
