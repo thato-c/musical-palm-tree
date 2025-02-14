@@ -75,5 +75,29 @@ namespace OnlineCampus.Repositories
         {
             await _userManager.AddToRoleAsync(user, role);
         }
+
+        public async Task<bool> RemoveRoleAsync(string userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            if (await _userManager.IsInRoleAsync(user, roleName))
+            {
+                var result = await _userManager.RemoveFromRoleAsync(user, roleName);
+                return result.Succeeded;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> UserHasRoleAsync(string userId, string roleName)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            return user != null && await _userManager.IsInRoleAsync(user,roleName);
+        }
     }
 }

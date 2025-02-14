@@ -17,7 +17,7 @@ builder.Services.AddDbContext<EnrolmentDBContext>(options =>
 
 builder.Services.AddTransient<IEmailSender>(s => new EmailSender("localhost", 25, "no-reply@OnlineCampus.com"));
 
-builder.Services.AddDefaultIdentity<User>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 7;
@@ -27,13 +27,16 @@ builder.Services.AddDefaultIdentity<User>(options =>
     options.Lockout.AllowedForNewUsers = true;
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 3;
-}).AddEntityFrameworkStores<EnrolmentDBContext>();
+})
+.AddEntityFrameworkStores<EnrolmentDBContext>()
+.AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IAuthRepository,  AuthRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

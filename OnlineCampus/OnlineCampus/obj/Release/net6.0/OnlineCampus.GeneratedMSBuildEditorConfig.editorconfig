@@ -11,7 +11,7 @@ build_property.RootNamespace = OnlineCampus
 build_property.ProjectDir = C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
-build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = true
 build_property.MSBuildProjectDirectory = C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus
 build_property._RazorSourceGeneratorDebug = 
 
@@ -81,6 +81,18 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/tchit/OneDrive/musical-palm-tree/OnlineCampus/OnlineCampus/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tchit/OneDrive/musical-palm-tree/OnlineCampus/OnlineCampus/Views/Role/CreateRole.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxDcmVhdGVSb2xlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tchit/OneDrive/musical-palm-tree/OnlineCampus/OnlineCampus/Views/Role/DeleteRole.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxEZWxldGVSb2xlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/tchit/OneDrive/musical-palm-tree/OnlineCampus/OnlineCampus/Views/Role/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/tchit/OneDrive/musical-palm-tree/OnlineCampus/OnlineCampus/Views/Shared/Error.cshtml]
