@@ -140,18 +140,7 @@ namespace OnlineCampus.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    var student = new Student
-                    {
-                        StudentId = Guid.NewGuid(),
-                        FirstName = Input.FirstName,
-                        LastName = Input.LastName,
-                        UserId = user.Id,
-                    };
-
-                    _studentRepository.InsertStudent(student);
-                    await _studentRepository.SaveAsync();                    
+                    _logger.LogInformation("User created a new account with password.");                   
 
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
