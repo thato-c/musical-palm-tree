@@ -80,6 +80,8 @@ namespace OnlineCampus.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _authRepository.AssignRoleAsync(user, "Admin");
+
                     // Map the ViewModel to the Admin Model
                     var Admin = new Models.Admin
                     {
