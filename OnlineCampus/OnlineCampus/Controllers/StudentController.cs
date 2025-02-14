@@ -12,11 +12,14 @@ namespace OnlineCampus.Controllers
     {
         private readonly ILogger<StudentController> _logger;
         private IStudentRepository studentRepository;
+        private IAuthRepository _authRepository;
 
-        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository)
+        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IAuthRepository authRepository)
         {
             _logger = logger;
             this.studentRepository = studentRepository;
+            _authRepository = authRepository;
+
         }
 
         [HttpGet]
@@ -80,23 +83,46 @@ namespace OnlineCampus.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(StudentViewModel viewModel)
+        public async Task<IActionResult> Create(StudentViewModel viewModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    // Map the ViewModel to the Student Model
-                    var Student = new Models.Student
+                    var user = new User
                     {
                         FirstName = viewModel.FirstName,
                         LastName = viewModel.LastName,
+                        Email = viewModel.Email,
+                        UserName = viewModel.UserName,
                     };
 
-                    // Add and save the new student to the database
-                    studentRepository.InsertStudent(Student);
-                    studentRepository.Save();
-                    return RedirectToAction("Index");
+                    var result = await _authRepository.RegisterUserAsync(user, viewModel.Password);
+
+                    if (result.Succeeded)
+                    {
+                        await _authRepository.AssignRoleAsync(user, "Student");
+
+                        // Map the ViewModel to the Student Model
+                        var Student = new Models.Student
+                        {
+                            FirstName = viewModel.FirstName,
+                            LastName = viewModel.LastName,
+                            UserId = user.Id,
+                        };
+
+                        // Add and save the new student to the database
+                        studentRepository.InsertStudent(Student);
+                        studentRepository.Save();
+                        await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));
+                        return RedirectToAction("Index");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                    return View(viewModel);
                 }
                 return View(viewModel);
             }
