@@ -40,7 +40,11 @@
         {
             if (course != null)
             {
-                <tr>
+                var isAdmin = User.IsInRole("Admin");
+                var courseUrl = Url.Action("Edit", "Course", new { CourseId = course.CourseId });
+                var rowAttributes = isAdmin ? $"onclick=\"location.href='{courseUrl}'\" style='cursor:pointer;'" : "";
+
+                <tr @Html.Raw(rowAttributes)>
                     <td>
                         @course.Code
                     </td>
@@ -53,17 +57,14 @@
                     <td>
                         @course.Credits
                     </td>
-                    @if (!User.IsInRole("Admin"))
+                    @if (!isAdmin)
                     {
                         <td>
                             <a asp-controller="Enrolment" asp-action="EnrollStudent" asp-route-CourseId="@course.CourseId">Enroll</a>
                         </td>
                     }
-                    @if (User.IsInRole("Admin"))
+                    @if (isAdmin)
                     {
-                        <td>
-                            <a asp-controller="Course" asp-action="Edit" asp-route-CourseId="@course.CourseId">Edit</a>
-                        </td>
                         <td>
                             <a asp-controller="Course" asp-action="Delete" asp-route-CourseId="@course.CourseId">Delete</a>
                         </td>

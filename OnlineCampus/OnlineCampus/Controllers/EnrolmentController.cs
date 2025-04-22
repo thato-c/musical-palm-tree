@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OnlineCampus.Interfaces;
 using System.Security.Claims;
-using OnlineCampus.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
 
