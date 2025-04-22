@@ -1,0 +1,6 @@
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\bin\Release\net6.0\CoverletSourceRootsMapping
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Release\net6.0\OnlineCampus.Tests.csproj.AssemblyReference.cache
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Release\net6.0\OnlineCampus.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Release\net6.0\OnlineCampus.Tests.AssemblyInfoInputs.cache
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Release\net6.0\OnlineCampus.Tests.AssemblyInfo.cs
+C:\Users\tchit\OneDrive\musical-palm-tree\OnlineCampus\OnlineCampus.Tests\obj\Release\net6.0\OnlineCampus.Tests.csproj.CoreCompileInputs.cache

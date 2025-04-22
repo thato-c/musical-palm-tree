@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
 using OnlineCampus.Interfaces;
@@ -8,6 +9,7 @@ using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class StudentController : Controller
     {
         private readonly ILogger<StudentController> _logger;

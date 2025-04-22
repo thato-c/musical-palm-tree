@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
@@ -6,6 +7,7 @@ using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CourseController : Controller
     {
         private readonly ILogger<CourseController> _logger;
@@ -17,6 +19,7 @@ namespace OnlineCampus.Controllers
             this.courseRepository = courseRepository;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Index(string sortOrder, string searchString, string currentFilter, int? pageNumber)
         {

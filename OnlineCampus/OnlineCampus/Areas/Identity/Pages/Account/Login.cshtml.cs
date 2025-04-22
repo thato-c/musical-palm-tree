@@ -18,6 +18,7 @@ using OnlineCampus.Models;
 
 namespace OnlineCampus.Areas.Identity.Pages.Account
 {
+    [AllowAnonymous]
     public class LoginModel : PageModel
     {
         private readonly UserManager<User> _userManager;

@@ -2,10 +2,12 @@
 using OnlineCampus.Interfaces;
 using System.Security.Claims;
 using OnlineCampus.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace OnlineCampus.Controllers
 {
+    [AllowAnonymous]
     public class EnrolmentController:Controller
     {
         private readonly ILogger<EnrolmentController> _logger;
