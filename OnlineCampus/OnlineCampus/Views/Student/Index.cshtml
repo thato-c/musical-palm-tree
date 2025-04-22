@@ -33,7 +33,10 @@
         {
             if (student != null)
             {
-                <tr>
+                var studentUrl = Url.Action("Edit", "Student", new { StudentId = student.StudentId });
+                var rowAttributes = $"onclick=\"location.href='{studentUrl}'\" style='cursor:pointer;'";
+
+                <tr @Html.Raw(rowAttributes)>
                     <td>
                         @student.FirstName
                     </td>
