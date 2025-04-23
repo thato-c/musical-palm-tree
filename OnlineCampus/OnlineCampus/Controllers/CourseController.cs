@@ -358,7 +358,6 @@ namespace OnlineCampus.Controllers
             }
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(CourseDetailViewModel viewModel)
