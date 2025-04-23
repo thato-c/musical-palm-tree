@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace OnlineCampus.ViewModels
 {
@@ -18,5 +19,11 @@ namespace OnlineCampus.ViewModels
 
         [Required(ErrorMessage = "Password is required")]
         public string Password { get; set; }
+
+        [Required(ErrorMessage = "Please select a role")]
+        [Display(Name = "Role")]
+        public string SelectedRole { get; set; } = string.Empty;
+
+        public SelectList? RoleOptions { get; set; }
     }
 }

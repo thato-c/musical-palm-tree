@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
@@ -8,7 +9,7 @@ using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;
@@ -60,7 +61,13 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var roles = new[] { "Admin", "SuperAdmin" };
+
+            var viewModel = new AdminViewModel
+            {
+                RoleOptions = new SelectList(roles)
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -82,7 +89,7 @@ namespace OnlineCampus.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _authRepository.AssignRoleAsync(user, "Admin");
+                    await _authRepository.AssignRoleAsync(user, viewModel.SelectedRole);
 
                     // Map the ViewModel to the Admin Model
                     var Admin = new Models.Admin
@@ -107,6 +114,7 @@ namespace OnlineCampus.Controllers
 
                 return View(viewModel);
             }
+            viewModel.RoleOptions = new SelectList(new[] { "Admin", "SuperAdmin" });
             return View(viewModel);
         }
 

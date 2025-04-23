@@ -37,5 +37,13 @@
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
 
+    <div class="form-group">
+        <label asp-for="SelectedRole">Role</label>
+        <select asp-for="SelectedRole" asp-items="Model.RoleOptions" class="form-control">
+            <option value="">-- select a role --</option>
+        </select>
+        <span asp-validation-for="SelectedRole" class="text-danger"></span>
+    </div>
+
     <button type="submit">Add Admin</button>
 </form>
