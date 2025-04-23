@@ -6,6 +6,7 @@ namespace OnlineCampus.Interfaces
     {
         IQueryable<Course> GetCourses();
         Task<Course> GetCourseByIdAsync(Guid courseId);
+        Task<Course> GetCourseWithStudentsByIdAsync(Guid courseId);
         Task<Guid?> GetCourseIdAsync(Guid courseId);
         void InsertCourse(Course course);
         Task<Course> DeleteCourse(Guid courseId);

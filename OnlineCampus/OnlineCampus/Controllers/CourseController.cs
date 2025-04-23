@@ -12,11 +12,15 @@ namespace OnlineCampus.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private ICourseRepository courseRepository;
+        private IEnrolmentRepository _enrollmentRepository;
+        private IStudentRepository _studentRepository;
 
-        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository)
+        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository, IEnrolmentRepository enrollmentRepository, IStudentRepository studentRepository)
         {
             _logger = logger;
             this.courseRepository = courseRepository;
+            _enrollmentRepository = enrollmentRepository;
+            _studentRepository = studentRepository;
         }
 
         [AllowAnonymous]
@@ -168,6 +172,30 @@ namespace OnlineCampus.Controllers
                 ViewBag.Message = "An error occurred while retrieving data from the database.";
                 return View();
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid CourseId)
+        {
+            var course = await courseRepository.GetCourseWithStudentsByIdAsync(CourseId);
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            var students = course.Enrolments.Select(e => e.Student).ToList();
+
+            var viewModel = new CourseDetailViewModel
+            {
+                CourseId = course.CourseId,
+                Code = course.Code,
+                Name = course.Name,
+                Description = course.Description,
+                Credits = course.Credits,
+                EnrolledStudents = students
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]

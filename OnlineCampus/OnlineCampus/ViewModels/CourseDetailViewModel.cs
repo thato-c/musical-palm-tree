@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OnlineCampus.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace OnlineCampus.ViewModels
 {
@@ -17,6 +18,8 @@ namespace OnlineCampus.ViewModels
 
         [Required(ErrorMessage = "Course Credits are required.")]
         public int Credits { get; set; } = 0;
+
+        public List<Student> EnrolledStudents { get; set; }
 
         [Timestamp]
         public byte[] RowVersion { get; set; }

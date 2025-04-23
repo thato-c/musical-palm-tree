@@ -19,8 +19,6 @@ namespace OnlineCampus.Models
         [Timestamp]
         public byte[] RowVersion { get; set; }
 
-
-
         public ICollection<Enrolment> Enrolments { get; set; } = new List<Enrolment>();
     }
 }

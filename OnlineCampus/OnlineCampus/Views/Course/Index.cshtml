@@ -41,7 +41,7 @@
             if (course != null)
             {
                 var isAdmin = User.IsInRole("Admin");
-                var courseUrl = Url.Action("Edit", "Course", new { CourseId = course.CourseId });
+                var courseUrl = Url.Action("Details", "Course", new { CourseId = course.CourseId });
                 var rowAttributes = isAdmin ? $"onclick=\"location.href='{courseUrl}'\" style='cursor:pointer;'" : "";
 
                 <tr @Html.Raw(rowAttributes)>

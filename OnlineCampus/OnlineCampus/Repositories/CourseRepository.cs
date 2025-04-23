@@ -20,6 +20,14 @@ namespace OnlineCampus.Repositories
             return context.Courses.AsQueryable();
         }
 
+        public async Task<Course> GetCourseWithStudentsByIdAsync(Guid courseId)
+        {
+            return await context.Courses.Where(c => c.CourseId == courseId)
+                .Include(c => c.Enrolments)
+                    .ThenInclude(e => e.Student)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<Course> GetCourseByIdAsync(Guid courseId)
         {
             return await context.Courses

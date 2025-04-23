@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 
@@ -74,6 +75,16 @@ namespace OnlineCampus.Repositories
         public async Task AssignRoleAsync(User user, string role)
         {
             await _userManager.AddToRoleAsync(user, role);
+        }
+
+        public Guid? GetUserId(ClaimsPrincipal user)
+        {
+            var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (Guid.TryParse(userIdStr, out Guid userId))
+            {
+                return userId;
+            }
+            return null;
         }
 
         public async Task<bool> RemoveRoleAsync(string userId, string roleName)

@@ -10,69 +10,41 @@ namespace OnlineCampus.Controllers
     public class EnrolmentController:Controller
     {
         private readonly ILogger<EnrolmentController> _logger;
-        private IEnrolmentRepository _enrolmentRepository;
-        private IStudentRepository _studentRepository;
-        private ICourseRepository _courseRepository;
+        private IEnrollmentService _enrollmentService;
+        private IAuthRepository _authRepository;
 
         public EnrolmentController(ILogger<EnrolmentController> logger, 
-                                    IEnrolmentRepository enrolmentRepository, 
-                                    IStudentRepository studentRepository,
-                                    ICourseRepository courseRepository)
+                                    IEnrollmentService enrollmentService,
+                                    IAuthRepository authRepository)
         {
             _logger = logger;
-            _enrolmentRepository = enrolmentRepository;
-            _studentRepository = studentRepository;
-            _courseRepository = courseRepository;
+            _enrollmentService = enrollmentService;
+            _authRepository = authRepository;
         }
 
         
         [HttpGet]
         public async Task<IActionResult> EnrollStudent(Guid CourseId)
         {
-            var courseId = await _courseRepository.GetCourseIdAsync(CourseId);
-            if (courseId == null)
-            {
-                ViewBag.Message = "The course has not been found";
-                return View("Course", "Index");
-            }
-
+            // Ensure the User is Authenticated
             if (User.Identity.IsAuthenticated)
             {
-                var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (!Guid.TryParse(userIdString, out Guid userId))
+                var userId = _authRepository.GetUserId(User);
+                if (userId == null)
                 {
-                    return BadRequest("Invalid User Id");
+                    return BadRequest("Invalid user Id");
                 }
 
-                var studentIdString = await _studentRepository.GetStudentIdAsync(userId);
+                var result = await _enrollmentService.EnrollStudentAsync(CourseId, userId.Value);
 
-                if (studentIdString == null)
+                if (!result.Success)
                 {
-                    // Redirect to working Login page
-                    return LocalRedirect("~/Identity/Account/Register");
+                    ViewBag.Message = "We couldn't complete your request. Please try again or contact support.";
+                    return RedirectToAction("Index", "Course");
                 }
-
-                Guid studentId = studentIdString.Value;
-
-                // Correct naming issues.
-                var enrollment = new Models.Enrolment
-                {
-                    CourseId = (Guid)courseId.Value,
-                    StudentId = studentId,
-                };
-
-                _enrolmentRepository.InsertEnrolment(enrollment);
-
-                _enrolmentRepository.Save();
-
-                // Correct the redirection, causes an error.
                 return RedirectToAction("Index", "Course");
             }
-
-            return LocalRedirect("~/Identity/Account/Register");
-                       
+            return LocalRedirect("~/Identity/Account/Register");            
         }
     }
-
-
 }
