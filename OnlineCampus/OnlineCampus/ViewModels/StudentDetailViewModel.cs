@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using OnlineCampus.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace OnlineCampus.ViewModels
 {
@@ -11,6 +12,8 @@ namespace OnlineCampus.ViewModels
 
         [Required(ErrorMessage = "Last name is required")]
         public string LastName { get; set; } = string.Empty;
+
+        public List<Course> EnrolledCourses { get; set; }
 
         [Timestamp]
         public byte[] RowVersion { get; set; }

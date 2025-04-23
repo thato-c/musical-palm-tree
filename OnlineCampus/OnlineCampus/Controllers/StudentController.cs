@@ -193,6 +193,28 @@ namespace OnlineCampus.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid StudentId)
+        {
+            var student = await studentRepository.GetStudentWithCoursesByIdAsync(StudentId);
+            if (student == null)
+            {
+                return NotFound();
+            }
+
+            var courses = student.Enrolments.Select(s => s.Course).ToList();
+
+            var viewModel = new StudentDetailViewModel
+            {
+                StudentId = student.StudentId,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                EnrolledCourses = courses,
+            };
+
+            return View(viewModel);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(StudentDetailViewModel viewModel)
