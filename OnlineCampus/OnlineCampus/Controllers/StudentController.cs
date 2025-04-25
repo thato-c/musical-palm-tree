@@ -204,7 +204,7 @@ namespace OnlineCampus.Controllers
 
             var courses = student.Enrolments.Select(s => s.Course).ToList();
 
-            var viewModel = new StudentDetailViewModel
+            var viewModel = new StudentDetailsViewModel
             {
                 StudentId = student.StudentId,
                 FirstName = student.FirstName,

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OnlineCampus.ViewModels
 {
-    public class CourseDetailViewModel
+    public class CourseDetailsViewModel
     {
         public Guid CourseId { get; set; }
 
@@ -18,6 +18,8 @@ namespace OnlineCampus.ViewModels
 
         [Required(ErrorMessage = "Course Credits are required.")]
         public int Credits { get; set; } = 0;
+
+        public List<Student> EnrolledStudents { get; set; }
 
         [Timestamp]
         public byte[] RowVersion { get; set; }
