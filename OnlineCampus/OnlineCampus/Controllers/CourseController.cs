@@ -221,66 +221,22 @@ namespace OnlineCampus.Controllers
                         {
                             _courseRepository.SetOriginalRowVersion(courseToEdit, viewModel.RowVersion);
 
-                            if (await TryUpdateModelAsync<Course>(
-                                courseToEdit,
-                                "",
-                                c => c.Code, c => c.Name, c => c.Credits, c => c.Description))
+                            courseToEdit.Code = viewModel.Code;
+                            courseToEdit.Name = viewModel.Name;
+                            courseToEdit.Credits = viewModel.Credits;
+                            courseToEdit.Description = viewModel.Description;
+
+                            try
                             {
-                                try
-                                {
-                                    _courseRepository.UpdateCourse(courseToEdit);
-                                    _courseRepository.Save();
-                                }
-                                catch (DbUpdateConcurrencyException ex)
-                                {
-                                    var exceptionEntry = ex.Entries.Single();
-                                    var databaseEntry = exceptionEntry.GetDatabaseValues();
-                                    if (databaseEntry == null)
-                                    {
-                                        ModelState.AddModelError(string.Empty, "Unable to save changes. The course was deleted by another user.");
-                                        return View(viewModel);
-                                    }
-                                    else
-                                    {
-                                        var databaseValues = (Course)databaseEntry.ToObject();
-                                        var updatedCourse = new CourseDetailViewModel
-                                        {
-                                            CourseId = databaseValues.CourseId,
-                                            Name = databaseValues.Name,
-                                            Credits = databaseValues.Credits,
-                                            Description = databaseValues.Description,
-                                            RowVersion = databaseValues.RowVersion,
-                                        };
-
-                                        if (databaseValues.Code != courseToEdit.Code)
-                                        {
-                                            ModelState.AddModelError("Code", $"Current Value: {databaseValues.Code}");
-                                        }
-                                        if (databaseValues.Name != courseToEdit.Name)
-                                        {
-                                            ModelState.AddModelError("Name", $"Current Value: {databaseValues.Name}");
-                                        }
-                                        if (databaseValues.Credits != courseToEdit.Credits)
-                                        {
-                                            ModelState.AddModelError("Credits", $"Current Value: {databaseValues.Credits}");
-                                        }
-                                        if (databaseValues.Description != courseToEdit.Description)
-                                        {
-                                            ModelState.AddModelError("Description", $"Current Value: {databaseValues.Description}");
-                                        }
-
-                                        ModelState.AddModelError(string.Empty, "The record you attempted to edit "
-                                            + "was modified by another user after you got the original value. " 
-                                            + "The edit operation was cancelled and the current values in the database" 
-                                            + "have been dispplayed. If you still want to edit this record, click " 
-                                            + "the Save button again. Otherwise click the Back to List hyperlink.");
-
-                                        return View(updatedCourse);
-                                    }
-                                }
+                                _courseRepository.UpdateCourse(courseToEdit);
+                                await _courseRepository.SaveAsync();
+                                return RedirectToAction("Index");
                             }
-
-                            return RedirectToAction("Index");
+                            catch (DbUpdateConcurrencyException ex)
+                            {
+                                _logger.LogError(ex, "Concurrency error while updating course");
+                                ModelState.AddModelError("", "Concurrency error. Please try again.");
+                            }
                         }
                     }
 
