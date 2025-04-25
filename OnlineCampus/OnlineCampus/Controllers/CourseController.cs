@@ -11,14 +11,14 @@ namespace OnlineCampus.Controllers
     public class CourseController : Controller
     {
         private readonly ILogger<CourseController> _logger;
-        private ICourseRepository courseRepository;
+        private ICourseRepository _courseRepository;
         private IEnrolmentRepository _enrollmentRepository;
         private IStudentRepository _studentRepository;
 
         public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository, IEnrolmentRepository enrollmentRepository, IStudentRepository studentRepository)
         {
             _logger = logger;
-            this.courseRepository = courseRepository;
+            _courseRepository = courseRepository;
             _enrollmentRepository = enrollmentRepository;
             _studentRepository = studentRepository;
         }
@@ -41,7 +41,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ViewData["CurrentFilter"] = searchString;
-                var courses = from c in courseRepository.GetCourses() 
+                var courses = from c in _courseRepository.GetCourses() 
                               select c;
 
                 if (!String.IsNullOrEmpty(searchString) )
@@ -101,8 +101,8 @@ namespace OnlineCampus.Controllers
                     };
 
                     // Add and save the nre course to the database
-                    courseRepository.InsertCourse(course);
-                    courseRepository.Save();
+                    _courseRepository.InsertCourse(course);
+                    _courseRepository.Save();
                     return RedirectToAction("Index");
                 }
                 return View(viewModel);
@@ -133,7 +133,7 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var course = await courseRepository.GetCourseByIdAsync(CourseId);
+                var course = await _courseRepository.GetCourseByIdAsync(CourseId);
 
                 if (course == null)
                 {
@@ -177,7 +177,7 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid CourseId)
         {
-            var course = await courseRepository.GetCourseWithStudentsByIdAsync(CourseId);
+            var course = await _courseRepository.GetCourseWithStudentsByIdAsync(CourseId);
             if (course == null)
             {
                 return NotFound();
@@ -205,7 +205,7 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var courseToEdit = await courseRepository.GetCourseByIdAsync(viewModel.CourseId);
+                    var courseToEdit = await _courseRepository.GetCourseByIdAsync(viewModel.CourseId);
 
                     if (courseToEdit != null)
                     {
@@ -219,7 +219,7 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
-                            courseRepository.SetOriginalRowVersion(courseToEdit, viewModel.RowVersion);
+                            _courseRepository.SetOriginalRowVersion(courseToEdit, viewModel.RowVersion);
 
                             if (await TryUpdateModelAsync<Course>(
                                 courseToEdit,
@@ -228,8 +228,8 @@ namespace OnlineCampus.Controllers
                             {
                                 try
                                 {
-                                    courseRepository.UpdateCourse(courseToEdit);
-                                    courseRepository.Save();
+                                    _courseRepository.UpdateCourse(courseToEdit);
+                                    _courseRepository.Save();
                                 }
                                 catch (DbUpdateConcurrencyException ex)
                                 {
@@ -317,7 +317,7 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var course = await courseRepository.GetCourseByIdAsync(CourseId);
+                var course = await _courseRepository.GetCourseByIdAsync(CourseId);
 
                 if (course == null)
                 {
@@ -366,7 +366,7 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var courseToDelete = await courseRepository.GetCourseByIdAsync(viewModel.CourseId);
+                    var courseToDelete = await _courseRepository.GetCourseByIdAsync(viewModel.CourseId);
 
                     if (courseToDelete == null)
                     {
@@ -376,8 +376,8 @@ namespace OnlineCampus.Controllers
 
                     try
                     {
-                        await courseRepository.DeleteCourse(viewModel.CourseId);
-                        await courseRepository.SaveAsync();
+                        await _courseRepository.DeleteCourse(viewModel.CourseId);
+                        await _courseRepository.SaveAsync();
                         return RedirectToAction("Index");
                     }
                     catch (DbUpdateException ex)

@@ -13,13 +13,13 @@ namespace OnlineCampus.Controllers
     public class StudentController : Controller
     {
         private readonly ILogger<StudentController> _logger;
-        private IStudentRepository studentRepository;
+        private IStudentRepository _studentRepository;
         private IAuthRepository _authRepository;
 
         public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IAuthRepository authRepository)
         {
             _logger = logger;
-            this.studentRepository = studentRepository;
+            _studentRepository = studentRepository;
             _authRepository = authRepository;
 
         }
@@ -41,7 +41,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ViewData["CurrentFilter"] = searchString;
-                var students = from s in studentRepository.GetStudents() 
+                var students = from s in _studentRepository.GetStudents() 
                                select s;
 
                 if (!String.IsNullOrEmpty(searchString))
@@ -114,8 +114,8 @@ namespace OnlineCampus.Controllers
                         };
 
                         // Add and save the new student to the database
-                        studentRepository.InsertStudent(Student);
-                        studentRepository.Save();
+                        _studentRepository.InsertStudent(Student);
+                        _studentRepository.Save();
                         await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));
                         return RedirectToAction("Index");
                     }
@@ -154,7 +154,7 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var student = await studentRepository.GetStudentByIdAsync(StudentId);
+                var student = await _studentRepository.GetStudentByIdAsync(StudentId);
 
                 if (student == null)
                 {
@@ -196,7 +196,7 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid StudentId)
         {
-            var student = await studentRepository.GetStudentWithCoursesByIdAsync(StudentId);
+            var student = await _studentRepository.GetStudentWithCoursesByIdAsync(StudentId);
             if (student == null)
             {
                 return NotFound();
@@ -223,7 +223,7 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var studentToEdit = await studentRepository.GetStudentByIdAsync(viewModel.StudentId);
+                    var studentToEdit = await _studentRepository.GetStudentByIdAsync(viewModel.StudentId);
 
                     if (studentToEdit != null)
                     {
@@ -235,15 +235,15 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
-                            studentRepository.SetOriginalRowVersion(studentToEdit, viewModel.RowVersion);
+                            _studentRepository.SetOriginalRowVersion(studentToEdit, viewModel.RowVersion);
 
                             studentToEdit.FirstName = viewModel.FirstName;
                             studentToEdit.LastName = viewModel.LastName;
 
                             try
                             {
-                                studentRepository.UpdateStudent(studentToEdit);
-                                await studentRepository.SaveAsync();
+                                _studentRepository.UpdateStudent(studentToEdit);
+                                await _studentRepository.SaveAsync();
                                 return RedirectToAction("Index");
                             }
                             catch (DbUpdateConcurrencyException ex)
@@ -292,7 +292,7 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var student = await studentRepository.GetStudentByIdAsync(StudentId);
+                var student = await _studentRepository.GetStudentByIdAsync(StudentId);
 
                 if (student == null)
                 {
@@ -340,7 +340,7 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var studentToDelete = await studentRepository.GetStudentByIdAsync(viewModel.StudentId);
+                    var studentToDelete = await _studentRepository.GetStudentByIdAsync(viewModel.StudentId);
 
                     if (studentToDelete == null)
                     {
@@ -350,8 +350,8 @@ namespace OnlineCampus.Controllers
 
                     try
                     {
-                        await studentRepository.DeleteStudent(viewModel.StudentId);
-                        await studentRepository.SaveAsync();
+                        await _studentRepository.DeleteStudent(viewModel.StudentId);
+                        await _studentRepository.SaveAsync();
 
                         return RedirectToAction("Index");
                     }
