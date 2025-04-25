@@ -7,28 +7,28 @@ namespace OnlineCampus.Repositories
 {
     public class AdminRepository : IAdminRepository, IDisposable
     {
-        private EnrolmentDBContext context;
+        private EnrolmentDBContext _context;
 
         public AdminRepository(EnrolmentDBContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         public IQueryable<Admin> GetAdmins()
         {
-            return context.Admins.AsQueryable();
+            return _context.Admins.AsQueryable();
         }
 
         public async Task<Admin> GetAdminByIdAsync(Guid adminId)
         {
-            return await context.Admins
+            return await _context.Admins
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.AdminId == adminId);
         }
 
         public async Task<Guid?> GetAdminIdAsync(Guid adminId)
         {
-            return await context.Admins
+            return await _context.Admins
                 .Where(c => c.AdminId == adminId)
                 .Select(c => c.AdminId)
                 .FirstOrDefaultAsync();
@@ -36,16 +36,16 @@ namespace OnlineCampus.Repositories
 
         public void InsertAdmin(Admin admin)
         {
-            context.Admins.Add(admin);
+            _context.Admins.Add(admin);
         }
 
         public async Task<Admin> DeleteAdmin(Guid adminId)
         {
-            var admin = await context.Admins.FindAsync(adminId);
+            var admin = await _context.Admins.FindAsync(adminId);
 
             if (admin != null)
             {
-                context.Admins.Remove(admin);
+                _context.Admins.Remove(admin);
             }
 
             return null;
@@ -53,22 +53,22 @@ namespace OnlineCampus.Repositories
 
         public void UpdateAdmin(Admin admin)
         {
-            context.Entry(admin).State = EntityState.Modified;
+            _context.Entry(admin).State = EntityState.Modified;
         }
 
         public void SetOriginalRowVersion(Admin admin, byte[] rowVersion)
         {
-            context.Entry(admin).Property("RowVersion").OriginalValue = rowVersion;
+            _context.Entry(admin).Property("RowVersion").OriginalValue = rowVersion;
         }
 
         public void Save()
         {
-            context.SaveChanges();
+            _context.SaveChanges();
         }
 
         public async Task SaveAsync()
         {
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         private bool disposed = false;
@@ -79,7 +79,7 @@ namespace OnlineCampus.Repositories
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    _context.Dispose();
                 }
             }
             this.disposed = true;

@@ -7,21 +7,21 @@ namespace OnlineCampus.Repositories
 {
     public class StudentRepository : IStudentRepository, IDisposable
     {
-        private EnrolmentDBContext context;
+        private EnrolmentDBContext _context;
 
         public StudentRepository(EnrolmentDBContext context)
         {
-            this.context = context;
+            _context = context;
         }
 
         public IQueryable<Student> GetStudents()
         {
-            return context.Students.AsQueryable();
+            return _context.Students.AsQueryable();
         }
    
         public async Task<Student> GetStudentWithCoursesByIdAsync(Guid studentId)
         {
-            return await context.Students.Where(s => s.StudentId == studentId)
+            return await _context.Students.Where(s => s.StudentId == studentId)
                 .Include(s => s.Enrolments)
                     .ThenInclude(e => e.Course)
                 .FirstOrDefaultAsync();
@@ -29,7 +29,7 @@ namespace OnlineCampus.Repositories
 
         public async Task<Guid?> GetStudentIdAsync(Guid userId)
         {
-            return await context.Students
+            return await _context.Students
                 .Where(s => s.UserId == userId.ToString())
                 .Select(s => s.StudentId)
                 .FirstOrDefaultAsync();
@@ -37,23 +37,23 @@ namespace OnlineCampus.Repositories
 
         public async Task<Student> GetStudentByIdAsync(Guid studentId)
         {
-            return await context.Students
+            return await _context.Students
                         .AsNoTracking()
                         .FirstOrDefaultAsync(s => s.StudentId == studentId);
         }
 
         public void InsertStudent(Student student)
         {
-            context.Students.Add(student);
+            _context.Students.Add(student);
         }
 
         public async Task<Student> DeleteStudent(Guid studentId)
         {
-            var student = await context.Students.FindAsync(studentId);
+            var student = await _context.Students.FindAsync(studentId);
 
             if (student != null)
             {
-                context.Students.Remove(student);
+                _context.Students.Remove(student);
             }
 
             return null;
@@ -61,22 +61,22 @@ namespace OnlineCampus.Repositories
 
         public void UpdateStudent(Student student)
         {
-            context.Entry(student).State = EntityState.Modified;
+            _context.Entry(student).State = EntityState.Modified;
         }
 
         public void SetOriginalRowVersion(Student student, byte[] rowVersion)
         {
-            context.Entry(student).Property("RowVersion").OriginalValue = rowVersion;
+            _context.Entry(student).Property("RowVersion").OriginalValue = rowVersion;
         }
 
         public void Save()
         {
-            context.SaveChanges();
+            _context.SaveChanges();
         }
 
         public async Task SaveAsync()
         {
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
 
         private bool disposed = false;
@@ -87,7 +87,7 @@ namespace OnlineCampus.Repositories
             {
                 if (disposing)
                 {
-                    context.Dispose();
+                    _context.Dispose();
                 }
             }
             this.disposed = true;
