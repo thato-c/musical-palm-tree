@@ -12,15 +12,11 @@ namespace OnlineCampus.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private ICourseRepository _courseRepository;
-        private IEnrolmentRepository _enrollmentRepository;
-        private IStudentRepository _studentRepository;
 
-        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository, IEnrolmentRepository enrollmentRepository, IStudentRepository studentRepository)
+        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository)
         {
             _logger = logger;
             _courseRepository = courseRepository;
-            _enrollmentRepository = enrollmentRepository;
-            _studentRepository = studentRepository;
         }
 
         [AllowAnonymous]

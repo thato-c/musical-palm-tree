@@ -145,7 +145,7 @@ namespace OnlineCampus.Controllers
 
                 ModelState.AddModelError("", "An error occurred while inserting data into the database.");
                 ViewBag.Message = "An error occurred while inserting data into the database.";
-                return View();
+                return View(viewModel);
             }
         }
 
