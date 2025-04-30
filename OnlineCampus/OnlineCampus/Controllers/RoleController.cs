@@ -5,7 +5,7 @@ using OnlineCampus.Interfaces;
 
 namespace OnlineCampus.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "SuperAdmin")]
     public class RoleController : Controller
     {
         private readonly IRoleRepository _roleRepository;

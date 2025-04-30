@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using OnlineCampus.Data;
+using OnlineCampus.DTOs;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 using OnlineCampus.Repositories;
@@ -9,19 +11,20 @@ using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, SuperAdmin")]
     public class StudentController : Controller
     {
         private readonly ILogger<StudentController> _logger;
         private IStudentRepository _studentRepository;
         private IAuthRepository _authRepository;
+        private readonly int _pageSize;
 
-        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IAuthRepository authRepository)
+        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IAuthRepository authRepository, IOptions<PaginationSettings> paginationSettings)
         {
             _logger = logger;
             _studentRepository = studentRepository;
             _authRepository = authRepository;
-
+            _pageSize = paginationSettings.Value.PageSize;
         }
 
         [HttpGet]
@@ -58,8 +61,7 @@ namespace OnlineCampus.Controllers
                         students = students.OrderBy(s => s.LastName);
                         break;
                 }
-                int pageSize = 8;
-                return View(await PaginatedList<Student>.CreateAsync((IQueryable<Student>)students, pageNumber ?? 1, pageSize));
+                return View(await PaginatedList<Student>.CreateAsync((IQueryable<Student>)students, pageNumber ?? 1, _pageSize));
             }
             catch (DbUpdateException ex)
             {

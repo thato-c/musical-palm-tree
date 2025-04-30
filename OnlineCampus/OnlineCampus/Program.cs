@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using OnlineCampus.Data;
+using OnlineCampus.DTOs;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 using OnlineCampus.Repositories;
@@ -38,6 +39,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
 });
 
+builder.Services.Configure<PaginationSettings>(builder.Configuration.GetSection("Pagination"));
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();

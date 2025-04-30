@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using OnlineCampus.DTOs;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 using OnlineCampus.Repositories;
@@ -15,12 +17,14 @@ namespace OnlineCampus.Controllers
         private readonly ILogger<AdminController> _logger;
         private IAdminRepository _adminRepository;
         private IAuthRepository _authRepository;
+        private readonly int _pageSize;
 
-        public AdminController(ILogger<AdminController> logger, IAdminRepository adminRepository, IAuthRepository authrepository)
+        public AdminController(ILogger<AdminController> logger, IAdminRepository adminRepository, IAuthRepository authrepository, IOptions<PaginationSettings> paginationSettings)
         {
             _logger = logger;
             _adminRepository = adminRepository;
             _authRepository = authrepository;
+            _pageSize = paginationSettings.Value.PageSize;
         }
 
         [HttpGet]
@@ -54,8 +58,7 @@ namespace OnlineCampus.Controllers
                     admins = admins.OrderBy(a => a.LastName);
                     break;
             }
-            int pageSize = 8;
-            return View(await PaginatedList<Admin>.CreateAsync((IQueryable<Admin>)admins, pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<Admin>.CreateAsync((IQueryable<Admin>)admins, pageNumber ?? 1, _pageSize));
         }
 
         [HttpGet]

@@ -1,22 +1,26 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using OnlineCampus.DTOs;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 using OnlineCampus.ViewModels;
 
 namespace OnlineCampus.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, SuperAdmin")]
     public class CourseController : Controller
     {
         private readonly ILogger<CourseController> _logger;
         private ICourseRepository _courseRepository;
+        private readonly int _pageSize;
 
-        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository)
+        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository, IOptions<PaginationSettings> paginationSettings)
         {
             _logger = logger;
             _courseRepository = courseRepository;
+            _pageSize = paginationSettings.Value.PageSize;
         }
 
         [AllowAnonymous]
@@ -54,8 +58,7 @@ namespace OnlineCampus.Controllers
                         courses = courses.OrderBy(c => c.Name);
                         break;
                 }
-                int pageSize = 8;
-                return View(await PaginatedList<Course>.CreateAsync((IQueryable<Course>)courses, pageNumber ?? 1, pageSize));
+                return View(await PaginatedList<Course>.CreateAsync((IQueryable<Course>)courses, pageNumber ?? 1, _pageSize));
             }
             catch (DbUpdateException ex)
             {
