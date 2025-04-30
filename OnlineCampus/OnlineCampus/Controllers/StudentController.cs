@@ -55,7 +55,7 @@ namespace OnlineCampus.Controllers
                         students = students.OrderByDescending(s => s.LastName);
                         break;
                     default:
-                        students.OrderBy(s => s.LastName);
+                        students = students.OrderBy(s => s.LastName);
                         break;
                 }
                 int pageSize = 8;
@@ -106,7 +106,7 @@ namespace OnlineCampus.Controllers
                         await _authRepository.AssignRoleAsync(user, "Student");
 
                         // Map the ViewModel to the Student Model
-                        var Student = new Models.Student
+                        var student = new Models.Student
                         {
                             FirstName = viewModel.FirstName,
                             LastName = viewModel.LastName,
@@ -114,7 +114,7 @@ namespace OnlineCampus.Controllers
                         };
 
                         // Add and save the new student to the database
-                        _studentRepository.InsertStudent(Student);
+                        _studentRepository.InsertStudent(student);
                         _studentRepository.Save();
                         await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));
                         return RedirectToAction("Index");

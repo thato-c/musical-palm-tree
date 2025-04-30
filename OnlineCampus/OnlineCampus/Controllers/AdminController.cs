@@ -51,7 +51,7 @@ namespace OnlineCampus.Controllers
                     admins = admins.OrderByDescending(a => a.LastName);
                     break;
                 default:
-                    admins.OrderBy(a => a.LastName);
+                    admins = admins.OrderBy(a => a.LastName);
                     break;
             }
             int pageSize = 8;
@@ -92,14 +92,14 @@ namespace OnlineCampus.Controllers
                     await _authRepository.AssignRoleAsync(user, viewModel.SelectedRole);
 
                     // Map the ViewModel to the Admin Model
-                    var Admin = new Models.Admin
+                    var admin = new Models.Admin
                     {
                         FirstName = viewModel.FirstName,
                         LastName = viewModel.LastName,
                         UserId = user.Id,
                     };
 
-                    _adminRepository.InsertAdmin(Admin);
+                    _adminRepository.InsertAdmin(admin);
                     await _adminRepository.SaveAsync();
 
                     await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));

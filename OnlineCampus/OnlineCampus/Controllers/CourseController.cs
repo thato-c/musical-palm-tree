@@ -51,7 +51,7 @@ namespace OnlineCampus.Controllers
                         courses = courses.OrderByDescending(c => c.Name);
                         break;
                     default:
-                        courses.OrderBy(c => c.Name);
+                        courses = courses.OrderBy(c => c.Name);
                         break;
                 }
                 int pageSize = 8;
