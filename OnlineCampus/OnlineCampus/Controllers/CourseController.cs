@@ -68,7 +68,7 @@ namespace OnlineCampus.Controllers
                 Console.WriteLine($"SQL: {ex.InnerException?.InnerException?.Message}");
                 ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
 
-                ViewBag.Message = "An error occurred while retrieving data from the database.";
+                TempData["Message"] = "An error occurred while retrieving data from the database.";
                 return View();
             }
         }
@@ -119,7 +119,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ModelState.AddModelError("", "An error occurred while inserting data into the database.");
-                ViewBag.Message = "An error occurred while inserting data into the database.";
+                TempData["Message"] = "An error occurred while inserting data into the database.";
                 return View();
             }
         }
@@ -133,7 +133,7 @@ namespace OnlineCampus.Controllers
 
                 if (course == null)
                 {
-                    ViewBag.Message = "The Course has not been found.";
+                    TempData["Message"] = "The Course has not been found.";
                     return View();
                 }
 
@@ -165,7 +165,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
-                ViewBag.Message = "An error occurred while retrieving data from the database.";
+                TempData["Message"] = "An error occurred while retrieving data from the database.";
                 return View();
             }
         }
@@ -236,7 +236,7 @@ namespace OnlineCampus.Controllers
                         }
                     }
 
-                    ViewBag.Message = "Course was not found.";
+                    TempData["Message"] = "Course was not found.";
                     return View();
 
                 }
@@ -259,7 +259,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ModelState.AddModelError("", "An error occurred while editing data in the database.");
-                ViewBag.Message = "An error occurred while editing data in the database.";
+                TempData["Message"] = "An error occurred while editing data in the database.";
                 return View();
             }
         }
@@ -273,7 +273,7 @@ namespace OnlineCampus.Controllers
 
                 if (course == null)
                 {
-                    ViewBag.Message = "The Course has not been found.";
+                    TempData["Message"] = "The Course has not been found.";
                     return View();
                 }
 
@@ -305,7 +305,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ModelState.AddModelError("", "An error occurred while retrieving data from the database.");
-                ViewBag.Message = "An error occurred while retrieving data from the database.";
+                TempData["Message"] = "An error occurred while retrieving data from the database.";
                 return View();
             }
         }
@@ -322,7 +322,7 @@ namespace OnlineCampus.Controllers
 
                     if (courseToDelete == null)
                     {
-                        ViewBag.Message = "Course was not found.";
+                        TempData["Message"] = "Course was not found.";
                         return View();
                     }
 
@@ -365,7 +365,7 @@ namespace OnlineCampus.Controllers
                 }
 
                 ModelState.AddModelError("", "An error occurred while removing data from the database.");
-                ViewBag.Message = "An error occurred while removing data from the database.";
+                TempData["Message"] = "An error occurred while removing data from the database.";
                 return View();
             }
         }

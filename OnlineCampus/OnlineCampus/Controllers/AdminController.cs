@@ -125,7 +125,7 @@ namespace OnlineCampus.Controllers
 
             if (admin == null)
             {
-                ViewBag.Message = "The Admin has not been found.";
+                TempData["Message"] = "The Admin has not been found.";
                 return View();
             }
 
@@ -179,7 +179,7 @@ namespace OnlineCampus.Controllers
                 }
                 else
                 {
-                    ViewBag.Message = "Admin was not found";
+                    TempData["Message"] = "Admin was not found";
                     return View();
                 }
             }
@@ -196,7 +196,7 @@ namespace OnlineCampus.Controllers
 
             if (admin == null)
             {
-                ViewBag.Message = "The Admin has not been found.";
+                TempData["Message"] = "The Admin has not been found.";
                 return View();
             }
 
@@ -221,7 +221,7 @@ namespace OnlineCampus.Controllers
 
                 if (adminToDelete == null)
                 {
-                    ViewBag.Message = "Admin was not found.";
+                    TempData["Message"] = "Admin was not found.";
                     return View();
                 }
 

@@ -39,7 +39,7 @@ namespace OnlineCampus.Controllers
 
                 if (!result.Success)
                 {
-                    ViewBag.Message = "We couldn't complete your request. Please try again or contact support.";
+                    TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
                     return RedirectToAction("Index", "Course");
                 }
                 return RedirectToAction("Index", "Course");
