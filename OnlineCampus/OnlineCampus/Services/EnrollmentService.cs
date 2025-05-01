@@ -20,18 +20,18 @@ namespace OnlineCampus.Services
             _enrolmentRepository = enrolmentRepository;
         }
 
-        public async Task<EnrollmentResult> EnrollStudentAsync(Guid courseId, Guid userId)
+        public async Task<OperationResult> EnrollStudentAsync(Guid courseId, Guid userId)
         {
             var courseExists = await _courseRepository.GetCourseByIdAsync(courseId);
             if (courseExists == null)
             {
-                return new EnrollmentResult { Success = false, ErrorMessage = "Course not found" };
+                return new OperationResult { Success = false, Message = "Course not found" };
             }
 
             var studentId = await _studentRepository.GetStudentIdAsync(userId);
             if (studentId == null)
             {
-                return new EnrollmentResult { Success = false, ErrorMessage = "Student not registered" };
+                return new OperationResult { Success = false, Message = "Student not registered" };
             }
 
             var enrolment = new Enrolment
@@ -43,7 +43,7 @@ namespace OnlineCampus.Services
             _enrolmentRepository.InsertEnrolment(enrolment);
             _enrolmentRepository.Save();
 
-            return new EnrollmentResult { Success = true };
+            return new OperationResult { Success = true };
         }
 
     }

@@ -5,6 +5,6 @@ namespace OnlineCampus.Interfaces
 {
     public interface IEnrollmentService
     {
-        Task<EnrollmentResult> EnrollStudentAsync(Guid courseId, Guid userId);
+        Task<OperationResult> EnrollStudentAsync(Guid courseId, Guid userId);
     }
 }

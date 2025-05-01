@@ -14,12 +14,14 @@ namespace OnlineCampus.Controllers
     {
         private readonly ILogger<CourseController> _logger;
         private ICourseRepository _courseRepository;
+        private ICourseService _courseService;
         private readonly int _pageSize;
 
-        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository, IOptions<PaginationSettings> paginationSettings)
+        public CourseController(ILogger<CourseController> logger, ICourseRepository courseRepository, IOptions<PaginationSettings> paginationSettings, ICourseService courseService)
         {
             _logger = logger;
             _courseRepository = courseRepository;
+            _courseService = courseService;
             _pageSize = paginationSettings.Value.PageSize;
         }
 
@@ -84,7 +86,7 @@ namespace OnlineCampus.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CourseViewModel viewModel)
+        public async Task<IActionResult> Create(CourseViewModel viewModel)
         {
             try
             {
@@ -100,8 +102,14 @@ namespace OnlineCampus.Controllers
                     };
 
                     // Add and save the nre course to the database
-                    _courseRepository.InsertCourse(course);
-                    _courseRepository.Save();
+                    var result = await _courseService.CreateCourseAsync(course);
+
+                    if (!result.Success)
+                    {
+                        TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                        return RedirectToAction("Index"); // Rename actions in order to redirect back to the form
+                    }
+
                     return RedirectToAction("Index");
                 }
                 return View(viewModel);
@@ -227,8 +235,12 @@ namespace OnlineCampus.Controllers
 
                             try
                             {
-                                _courseRepository.UpdateCourse(courseToEdit);
-                                await _courseRepository.SaveAsync();
+                                var result = await _courseService.UpdateCourseAsync(courseToEdit);
+                                if (!result.Success)
+                                {
+                                    TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                                    return RedirectToAction("Index");
+                                }
                                 return RedirectToAction("Index");
                             }
                             catch (DbUpdateConcurrencyException ex)
@@ -331,8 +343,12 @@ namespace OnlineCampus.Controllers
 
                     try
                     {
-                        await _courseRepository.DeleteCourse(viewModel.CourseId);
-                        await _courseRepository.SaveAsync();
+                        var result = await _courseService.DeleteCourseAsync(viewModel.CourseId);
+                        if (!result.Success)
+                        {
+                            TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                            return RedirectToAction("Index");
+                        }
                         return RedirectToAction("Index");
                     }
                     catch (DbUpdateException ex)
