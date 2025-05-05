@@ -140,9 +140,9 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var course = await _courseRepository.GetCourseByIdAsync(CourseId);
+                var course = await _courseService.GetCourseByIdAsync(CourseId);
 
-                if (course == null)
+                if (course.Data == null)
                 {
                     TempData["Message"] = "The Course has not been found.";
                     return View();
@@ -150,12 +150,12 @@ namespace OnlineCampus.Controllers
 
                 var viewModel = new CourseDetailViewModel
                 {
-                    CourseId = course.CourseId,
-                    Code = course.Code,
-                    Name = course.Name,
-                    Description = course.Description,
-                    Credits = course.Credits,
-                    RowVersion = course.RowVersion,
+                    CourseId = course.Data.CourseId,
+                    Code = course.Data.Code,
+                    Name = course.Data.Name,
+                    Description = course.Data.Description,
+                    Credits = course.Data.Credits,
+                    RowVersion = course.Data.RowVersion,
                 };
 
                 return View(viewModel);
@@ -184,21 +184,21 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid CourseId)
         {
-            var course = await _courseRepository.GetCourseWithStudentsByIdAsync(CourseId);
-            if (course == null)
+            var course = await _courseService.GetCourseWithEnrolledStudentsAsync(CourseId);
+            if (course.Data == null)
             {
                 return NotFound();
             }
 
-            var students = course.Enrolments.Select(e => e.Student).ToList();
+            var students = course.Data.Enrolments.Select(e => e.Student).ToList();
 
             var viewModel = new CourseDetailsViewModel
             {
-                CourseId = course.CourseId,
-                Code = course.Code,
-                Name = course.Name,
-                Description = course.Description,
-                Credits = course.Credits,
+                CourseId = course.Data.CourseId,
+                Code = course.Data.Code,
+                Name = course.Data.Name,
+                Description = course.Data.Description,
+                Credits = course.Data.Credits,
                 EnrolledStudents = students
             };
 
@@ -216,6 +216,7 @@ namespace OnlineCampus.Controllers
 
                     if (courseToEdit != null)
                     {
+                        // Ensure data has been modified
                         if (courseToEdit.Code == viewModel.Code && 
                             courseToEdit.Name == viewModel.Name &&
                             courseToEdit.Credits == viewModel.Credits &&
@@ -226,12 +227,11 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
-                            _courseRepository.SetOriginalRowVersion(courseToEdit, viewModel.RowVersion);
-
                             courseToEdit.Code = viewModel.Code;
                             courseToEdit.Name = viewModel.Name;
                             courseToEdit.Credits = viewModel.Credits;
                             courseToEdit.Description = viewModel.Description;
+                            courseToEdit.RowVersion = viewModel.RowVersion;
 
                             try
                             {
@@ -284,9 +284,9 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var course = await _courseRepository.GetCourseByIdAsync(CourseId);
+                var course = await _courseService.GetCourseByIdAsync(CourseId);
 
-                if (course == null)
+                if (course.Data == null)
                 {
                     TempData["Message"] = "The Course has not been found.";
                     return View();
@@ -294,12 +294,12 @@ namespace OnlineCampus.Controllers
 
                 var viewModel = new CourseDetailViewModel
                 {
-                    CourseId = course.CourseId,
-                    Name = course.Name,
-                    Description = course.Description,
-                    Code = course.Code,
-                    Credits = course.Credits,
-                    RowVersion = course.RowVersion,
+                    CourseId = course.Data.CourseId,
+                    Name = course.Data.Name,
+                    Description = course.Data.Description,
+                    Code = course.Data.Code,
+                    Credits = course.Data.Credits,
+                    RowVersion = course.Data.RowVersion,
                 };
 
                 return View(viewModel);
@@ -333,7 +333,7 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var courseToDelete = await _courseRepository.GetCourseByIdAsync(viewModel.CourseId);
+                    var courseToDelete = await _courseService.GetCourseByIdAsync(viewModel.CourseId);
 
                     if (courseToDelete == null)
                     {
