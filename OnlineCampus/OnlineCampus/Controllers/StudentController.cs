@@ -16,15 +16,17 @@ namespace OnlineCampus.Controllers
     {
         private readonly ILogger<StudentController> _logger;
         private IStudentRepository _studentRepository;
+        private IStudentService _studentService;
         private IAuthRepository _authRepository;
         private readonly int _pageSize;
 
-        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IAuthRepository authRepository, IOptions<PaginationSettings> paginationSettings)
+        public StudentController(ILogger<StudentController> logger, IStudentRepository studentRepository, IAuthRepository authRepository, IStudentService studentService, IOptions<PaginationSettings> paginationSettings)
         {
             _logger = logger;
             _studentRepository = studentRepository;
             _authRepository = authRepository;
             _pageSize = paginationSettings.Value.PageSize;
+            _studentService = studentService;
         }
 
         [HttpGet]
@@ -116,8 +118,12 @@ namespace OnlineCampus.Controllers
                         };
 
                         // Add and save the new student to the database
-                        _studentRepository.InsertStudent(student);
-                        _studentRepository.Save();
+                        var operationResult = await _studentService.CreateStudentAsync(student);
+                        if (!operationResult.Success)
+                        {
+                            TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                            return RedirectToAction("Index");
+                        }
                         await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));
                         return RedirectToAction("Index");
                     }
@@ -156,9 +162,9 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var student = await _studentRepository.GetStudentByIdAsync(StudentId);
+                var student = await _studentService.GetStudentByIdAsync(StudentId);
 
-                if (student == null)
+                if (student.Data == null)
                 {
                     TempData["Message"] = "The Student has not been found.";
                     return View();
@@ -166,10 +172,10 @@ namespace OnlineCampus.Controllers
 
                 var viewModel = new StudentDetailViewModel
                 {
-                    StudentId = student.StudentId,
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    RowVersion = student.RowVersion
+                    StudentId = student.Data.StudentId,
+                    FirstName = student.Data.FirstName,
+                    LastName = student.Data.LastName,
+                    RowVersion = student.Data.RowVersion
                 };
 
                 return View(viewModel);
@@ -198,19 +204,19 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid StudentId)
         {
-            var student = await _studentRepository.GetStudentWithCoursesByIdAsync(StudentId);
-            if (student == null)
+            var student = await _studentService.GetStudentByIdWithEnrolledCoursesAsync(StudentId);
+            if (student.Data == null)
             {
                 return NotFound();
             }
 
-            var courses = student.Enrolments.Select(s => s.Course).ToList();
+            var courses = student.Data.Enrolments.Select(s => s.Course).ToList();
 
             var viewModel = new StudentDetailsViewModel
             {
-                StudentId = student.StudentId,
-                FirstName = student.FirstName,
-                LastName = student.LastName,
+                StudentId = student.Data.StudentId,
+                FirstName = student.Data.FirstName,
+                LastName = student.Data.LastName,
                 EnrolledCourses = courses,
             };
 
@@ -237,15 +243,17 @@ namespace OnlineCampus.Controllers
                         }
                         else
                         {
-                            _studentRepository.SetOriginalRowVersion(studentToEdit, viewModel.RowVersion);
-
                             studentToEdit.FirstName = viewModel.FirstName;
                             studentToEdit.LastName = viewModel.LastName;
 
                             try
                             {
-                                _studentRepository.UpdateStudent(studentToEdit);
-                                await _studentRepository.SaveAsync();
+                                var result = await _studentService.UpdateStudentAsync(studentToEdit);
+                                if (!result.Success)
+                                {
+                                    TempData["Message"] = "We couldn't complete your request. Please try again or contwct support.";
+                                    return RedirectToAction("Index");
+                                }
                                 return RedirectToAction("Index");
                             }
                             catch (DbUpdateConcurrencyException ex)
@@ -294,9 +302,9 @@ namespace OnlineCampus.Controllers
         {
             try
             {
-                var student = await _studentRepository.GetStudentByIdAsync(StudentId);
+                var student = await _studentService.GetStudentByIdAsync(StudentId);
 
-                if (student == null)
+                if (student.Data == null)
                 {
                     TempData["Message"] = "The Student has not been found.";
                     return View();
@@ -304,10 +312,10 @@ namespace OnlineCampus.Controllers
 
                 var viewModel = new StudentDetailViewModel
                 {
-                    StudentId = student.StudentId,
-                    FirstName = student.FirstName,
-                    LastName = student.LastName,
-                    RowVersion = student.RowVersion
+                    StudentId = student.Data.StudentId,
+                    FirstName = student.Data.FirstName,
+                    LastName = student.Data.LastName,
+                    RowVersion = student.Data.RowVersion
                 };
 
                 return View(viewModel);
@@ -342,9 +350,9 @@ namespace OnlineCampus.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    var studentToDelete = await _studentRepository.GetStudentByIdAsync(viewModel.StudentId);
+                    var studentToDelete = await _studentService.GetStudentByIdAsync(viewModel.StudentId);
 
-                    if (studentToDelete == null)
+                    if (studentToDelete.Data == null)
                     {
                         TempData["Message"] = "Student was not found.";
                         return View();
@@ -352,9 +360,12 @@ namespace OnlineCampus.Controllers
 
                     try
                     {
-                        await _studentRepository.DeleteStudent(viewModel.StudentId);
-                        await _studentRepository.SaveAsync();
-
+                        var result = await _studentService.DeleteStudentAsync(viewModel.StudentId);
+                        if (!result.Success)
+                        {
+                            TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                            return RedirectToAction("Index");
+                        }
                         return RedirectToAction("Index");
                     }
                     catch(DbUpdateConcurrencyException ex)

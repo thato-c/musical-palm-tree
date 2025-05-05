@@ -41,11 +41,13 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.Configure<PaginationSettings>(builder.Configuration.GetSection("Pagination"));
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IEnrolmentRepository, EnrolmentRepository>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IAuthRepository,  AuthRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 

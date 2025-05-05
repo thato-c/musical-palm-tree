@@ -17,13 +17,15 @@ namespace OnlineCampus.Controllers
         private readonly ILogger<AdminController> _logger;
         private IAdminRepository _adminRepository;
         private IAuthRepository _authRepository;
+        private IAdminService _adminService;
         private readonly int _pageSize;
 
-        public AdminController(ILogger<AdminController> logger, IAdminRepository adminRepository, IAuthRepository authrepository, IOptions<PaginationSettings> paginationSettings)
+        public AdminController(ILogger<AdminController> logger, IAdminRepository adminRepository, IAuthRepository authrepository, IAdminService adminService, IOptions<PaginationSettings> paginationSettings)
         {
             _logger = logger;
             _adminRepository = adminRepository;
             _authRepository = authrepository;
+            _adminService = adminService;
             _pageSize = paginationSettings.Value.PageSize;
         }
 
@@ -102,11 +104,13 @@ namespace OnlineCampus.Controllers
                         UserId = user.Id,
                     };
 
-                    _adminRepository.InsertAdmin(admin);
-                    await _adminRepository.SaveAsync();
-
+                    var operationResult = await _adminService.CreateAdminAsync(admin);
+                    if (!operationResult.Success)
+                    {
+                        TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                        return RedirectToAction("Index");
+                    }
                     await _authRepository.SendConfirmationEmailAsync(user, Url.Content("~/"));
-
                     return View("Index");
                 }
 
@@ -124,9 +128,9 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid AdminId)
         {
-            var admin = await _adminRepository.GetAdminByIdAsync(AdminId);
+            var admin = await _adminService.GetAdminByIdAsync(AdminId);
 
-            if (admin == null)
+            if (admin.Data == null)
             {
                 TempData["Message"] = "The Admin has not been found.";
                 return View();
@@ -134,10 +138,10 @@ namespace OnlineCampus.Controllers
 
             var viewModel = new AdminDetailViewModel
             {
-                AdminId = admin.AdminId,
-                FirstName = admin.FirstName,
-                LastName = admin.LastName,
-                RowVersion = admin.RowVersion,
+                AdminId = admin.Data.AdminId,
+                FirstName = admin.Data.FirstName,
+                LastName = admin.Data.LastName,
+                RowVersion = admin.Data.RowVersion,
             };
 
             return View(viewModel);
@@ -160,15 +164,17 @@ namespace OnlineCampus.Controllers
                     }
                     else
                     {
-                        _adminRepository.SetOriginalRowVersion(adminToEdit, viewModel.RowVersion);
-
                         adminToEdit.FirstName = viewModel.FirstName;
                         adminToEdit.LastName = viewModel.LastName;
 
                         try
                         {
-                            _adminRepository.UpdateAdmin(adminToEdit);
-                            await _adminRepository.SaveAsync();
+                            var result = await _adminService.UpdateAdminAsync(adminToEdit);
+                            if (result != null)
+                            {
+                                TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                                return RedirectToAction("Index");
+                            }
                             return RedirectToAction("Index");
                         }
                         catch (DbUpdateConcurrencyException ex)
@@ -195,9 +201,9 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(Guid AdminId)
         {
-            var admin = await _adminRepository.GetAdminByIdAsync(AdminId);
+            var admin = await _adminService.GetAdminByIdAsync(AdminId);
 
-            if (admin == null)
+            if (admin.Data == null)
             {
                 TempData["Message"] = "The Admin has not been found.";
                 return View();
@@ -205,10 +211,10 @@ namespace OnlineCampus.Controllers
 
             var viewModel = new AdminDetailViewModel
             {
-                AdminId = admin.AdminId,
-                FirstName = admin.FirstName,
-                LastName = admin.LastName,
-                RowVersion = admin.RowVersion,
+                AdminId = admin.Data.AdminId,
+                FirstName = admin.Data.FirstName,
+                LastName = admin.Data.LastName,
+                RowVersion = admin.Data.RowVersion,
             };
 
             return View(viewModel);
@@ -220,9 +226,9 @@ namespace OnlineCampus.Controllers
         {
             if (ModelState.IsValid)
             {
-                var adminToDelete = await _adminRepository.GetAdminByIdAsync(viewModel.AdminId);
+                var adminToDelete = await _adminService.GetAdminByIdAsync(viewModel.AdminId);
 
-                if (adminToDelete == null)
+                if (adminToDelete.Data == null)
                 {
                     TempData["Message"] = "Admin was not found.";
                     return View();
@@ -230,8 +236,12 @@ namespace OnlineCampus.Controllers
 
                 try
                 {
-                    await _adminRepository.DeleteAdmin(viewModel.AdminId);
-                    await _adminRepository.SaveAsync();
+                    var result = await _adminService.DeleteAdminAsync(viewModel.AdminId);
+                    if (!result.Success)
+                    {
+                        TempData["Message"] = "We couldn't complete your request. Please try again or contact support.";
+                        return RedirectToAction("Index");
+                    }
                     return RedirectToAction("Index");
                 }
                 catch(DbUpdateConcurrencyException ex)

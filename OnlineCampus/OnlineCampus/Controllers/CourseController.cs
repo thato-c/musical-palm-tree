@@ -184,7 +184,7 @@ namespace OnlineCampus.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid CourseId)
         {
-            var course = await _courseService.GetCourseWithEnrolledStudentsAsync(CourseId);
+            var course = await _courseService.GetCourseByIdWithEnrolledStudentsAsync(CourseId);
             if (course.Data == null)
             {
                 return NotFound();

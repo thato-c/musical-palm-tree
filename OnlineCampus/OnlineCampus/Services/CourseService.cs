@@ -1,4 +1,5 @@
-﻿using OnlineCampus.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineCampus.DTOs;
 using OnlineCampus.Interfaces;
 using OnlineCampus.Models;
 
@@ -11,6 +12,25 @@ namespace OnlineCampus.Services
         public CourseService(ICourseRepository courseRepository)
         {
             _courseRepository = courseRepository;
+        }
+
+        public async Task<OperationResultWithData<List<Course>>> GetAllCoursesAsync()
+        {
+            var courses = await _courseRepository.GetCourses().ToListAsync();
+
+            if (courses == null)
+            {
+                return new OperationResultWithData<List<Course>>
+                {
+                    Success = false,
+                    Message = "Courses not Found."
+                };
+            }
+            return new OperationResultWithData<List<Course>>
+            {
+                Success = true,
+                Data = courses
+            };
         }
 
         public async Task<OperationResult> CreateCourseAsync(Course course)
@@ -47,7 +67,7 @@ namespace OnlineCampus.Services
             return new OperationResultWithData<Course> { Success = true, Data = course };
         }
 
-        public async Task<OperationResultWithData<Course>> GetCourseWithEnrolledStudentsAsync(Guid courseId)
+        public async Task<OperationResultWithData<Course>> GetCourseByIdWithEnrolledStudentsAsync(Guid courseId)
         {
             var course = await _courseRepository.GetCourseWithStudentsByIdAsync(courseId);
 
