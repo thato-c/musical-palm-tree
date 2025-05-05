@@ -9,11 +9,11 @@ namespace OnlineCampus.Services
     {
         private readonly ICourseRepository _courseRepository;
         private readonly IStudentRepository _studentRepository;
-        private readonly IEnrolmentRepository _enrolmentRepository;
+        private readonly IEnrollmentRepository _enrolmentRepository;
 
         public EnrollmentService(ICourseRepository courseRepository,
                                  IStudentRepository studentRepository,
-                                 IEnrolmentRepository enrolmentRepository)
+                                 IEnrollmentRepository enrolmentRepository)
         {
             _courseRepository = courseRepository;
             _studentRepository = studentRepository;
@@ -34,13 +34,13 @@ namespace OnlineCampus.Services
                 return new OperationResult { Success = false, Message = "Student not registered" };
             }
 
-            var enrolment = new Enrolment
+            var enrollment = new Enrolment
             {
                 CourseId = courseId,
                 StudentId = studentId.Value
             };
 
-            _enrolmentRepository.InsertEnrolment(enrolment);
+            _enrolmentRepository.InsertEnrollment(enrollment);
             _enrolmentRepository.Save();
 
             return new OperationResult { Success = true };

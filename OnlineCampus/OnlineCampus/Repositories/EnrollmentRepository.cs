@@ -5,32 +5,32 @@ using OnlineCampus.Models;
 
 namespace OnlineCampus.Repositories
 {
-    public class EnrolmentRepository:IEnrolmentRepository, IDisposable
+    public class EnrollmentRepository:IEnrollmentRepository, IDisposable
     {
         private EnrolmentDBContext _context;
 
-        public EnrolmentRepository(EnrolmentDBContext context)
+        public EnrollmentRepository(EnrolmentDBContext context)
         {
             _context = context;
         }
 
-        public IQueryable<Enrolment> GetEnrolments()
+        public IQueryable<Enrolment> GetEnrollments()
         {
             return _context.Enrolments.AsQueryable();
         }
 
-        public async Task<Enrolment> GetEnrolmentByIdAsync(Guid enrolmentId)
+        public async Task<Enrolment> GetEnrollmentByIdAsync(Guid enrolmentId)
         {
             return await _context.Enrolments.AsNoTracking().
                 FirstOrDefaultAsync(e => e.EnrolmentId == enrolmentId);
         }
 
-        public void InsertEnrolment(Enrolment enrolment)
+        public void InsertEnrollment(Enrolment enrolment)
         {
             _context.Enrolments.Add(enrolment);
         }
 
-        public async Task<Enrolment> DeleteEnrolment(Guid enrolmentId)
+        public async Task<Enrolment> DeleteEnrollment(Guid enrolmentId)
         {
             var enrolment = await _context.Enrolments.FirstAsync(e => e.EnrolmentId == enrolmentId);
 
@@ -42,7 +42,7 @@ namespace OnlineCampus.Repositories
             return null;
         }
 
-        public void UpdateEnrolment(Enrolment enrolment)
+        public void UpdateEnrollment(Enrolment enrolment)
         {
             _context.Entry(enrolment).State = EntityState.Modified;
         }

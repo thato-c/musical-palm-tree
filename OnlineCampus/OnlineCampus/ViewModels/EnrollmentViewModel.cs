@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OnlineCampus.ViewModels
 {
-    public class EnrolmentViewModel
+    public class EnrollmentViewModel
     {
         [Required(ErrorMessage = "StudentId is required")]
         public Guid StudentId { get; set; }
