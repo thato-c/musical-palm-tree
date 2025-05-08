@@ -182,7 +182,6 @@ namespace OnlineCampus.Controllers
                             _logger.LogError(ex, "Concurrency error while updating admin.");
                             ModelState.AddModelError("", "Concurrency error. Please try again.");
                         }
-
                         return RedirectToAction("Index");
                     }
                 }

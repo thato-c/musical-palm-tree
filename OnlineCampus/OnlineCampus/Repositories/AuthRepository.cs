@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.WebUtilities;
 using OnlineCampus.Interfaces;
@@ -55,11 +57,12 @@ namespace OnlineCampus.Repositories
                 _logger.LogError("HttpContext is null. Cannot generate callback URL.");
             }
 
-            var callbackUrl = _linkGenerator.GetUriByPage(
-                httpContext: _httpContextAccessor.HttpContext, 
-                page: "/Account/ConfirmEmail", 
-                values: new { area = "Identity", userId, code, returnUrl }
-            );
+            var callbackUrl = _linkGenerator.GetUriByAction(
+                httpContext: _httpContextAccessor.HttpContext,
+                action: "ConfirmEmail",
+                controller: "Account",
+                values: new {userId, code, returnUrl}
+                );
 
             if (string.IsNullOrEmpty(callbackUrl))
             {
